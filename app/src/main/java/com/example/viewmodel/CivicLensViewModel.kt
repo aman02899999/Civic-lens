@@ -71,6 +71,18 @@ class CivicLensViewModel(
         _preselectedParties.value = null
     }
 
+    // Pre-selected tab for the "Know Your Rights" legal panel (used when opening from a bookmark)
+    private val _preselectedLegalTab = MutableStateFlow<Int?>(null)
+    val preselectedLegalTab: StateFlow<Int?> = _preselectedLegalTab.asStateFlow()
+
+    fun setPreselectedLegalTab(tabIndex: Int) {
+        _preselectedLegalTab.value = tabIndex
+    }
+
+    fun clearPreselectedLegalTab() {
+        _preselectedLegalTab.value = null
+    }
+
     val searchHistory: StateFlow<List<DbSearchHistory>> = repository.searchHistory
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 

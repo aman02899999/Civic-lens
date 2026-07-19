@@ -112,7 +112,8 @@ class MainActivity : ComponentActivity() {
                                 onNavigateToSchemes = { navController.navigate("schemes") },
                                 onNavigateToNews = { navController.navigate("news") },
                                 onNavigateToCompare = { navController.navigate("compare") },
-                                onNavigateToAssistant = { navController.navigate("assistant") }
+                                onNavigateToAssistant = { navController.navigate("assistant") },
+                                onNavigateToLegal = { navController.navigate("legal_rights") }
                             )
                         }
 
