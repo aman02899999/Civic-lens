@@ -53,7 +53,8 @@ fun HomeScreen(
     onNavigateToResearch: () -> Unit,
     onNavigateToBookmarks: () -> Unit,
     onNavigateToSettings: () -> Unit,
-    onNavigateToSentiment: () -> Unit
+    onNavigateToSentiment: () -> Unit,
+    onNavigateToLegal: () -> Unit
 ) {
     val news by viewModel.news.collectAsState()
     val searchHistory by viewModel.searchHistory.collectAsState()
@@ -351,8 +352,16 @@ fun HomeScreen(
                                     subtitle = "Compare Candidate Veracity",
                                     icon = Icons.AutoMirrored.Filled.TrendingUp,
                                     color = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.fillMaxWidth().testTag("nav_sentiment_feature"),
+                                    modifier = Modifier.weight(1f).testTag("nav_sentiment_feature"),
                                     onClick = onNavigateToSentiment
+                                )
+                                FeatureButton(
+                                    title = "Know Your Rights",
+                                    subtitle = "Constitution, IPC/BNS & Legal Aid",
+                                    icon = Icons.Default.VerifiedUser,
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    modifier = Modifier.weight(1f).testTag("nav_legal_feature"),
+                                    onClick = onNavigateToLegal
                                 )
                             }
                         }
@@ -731,9 +740,19 @@ fun HomeScreen(
                                     icon = Icons.AutoMirrored.Filled.TrendingUp,
                                     color = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier
-                                        .fillMaxWidth()
+                                        .weight(1f)
                                         .testTag("nav_sentiment_feature"),
                                     onClick = onNavigateToSentiment
+                                )
+                                FeatureButton(
+                                    title = "Know Your Rights",
+                                    subtitle = "Constitution, IPC/BNS & Legal Aid",
+                                    icon = Icons.Default.VerifiedUser,
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .testTag("nav_legal_feature"),
+                                    onClick = onNavigateToLegal
                                 )
                             }
                         }
