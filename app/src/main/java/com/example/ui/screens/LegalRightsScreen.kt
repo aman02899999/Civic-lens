@@ -171,6 +171,7 @@ private fun LegalDisclaimerBanner(modifier: Modifier = Modifier) {
 
 @Composable
 private fun ConstitutionTab(viewModel: CivicLensViewModel) {
+    val context = LocalContext.current
     val bookmarks by viewModel.bookmarks.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf(LegalKnowledgeBase.constitutionCategoryAll) }
@@ -244,6 +245,15 @@ private fun ConstitutionTab(viewModel: CivicLensViewModel) {
                                 currentlyBookmarked = isBookmarked
                             )
                         },
+                        onShare = {
+                            val shareText = "${article.articleNumber}: ${article.title}\n\n${article.description}\n\n— Shared from CivicLens AI, Know Your Rights"
+                            val intent = Intent(Intent.ACTION_SEND).apply {
+                                type = "text/plain"
+                                putExtra(Intent.EXTRA_SUBJECT, "${article.articleNumber}: ${article.title}")
+                                putExtra(Intent.EXTRA_TEXT, shareText)
+                            }
+                            context.startActivity(Intent.createChooser(intent, "Share ${article.articleNumber}"))
+                        },
                         modifier = Modifier.testTag("article_card_${article.articleNumber}")
                     )
                 }
@@ -257,6 +267,7 @@ private fun ConstitutionArticleCard(
     article: ConstitutionArticle,
     isBookmarked: Boolean,
     onToggleBookmark: () -> Unit,
+    onShare: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -291,6 +302,9 @@ private fun ConstitutionArticleCard(
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }
+            IconButton(onClick = onShare, modifier = Modifier.testTag("share_article_${article.articleNumber}")) {
+                Icon(Icons.Default.Share, contentDescription = "Share", tint = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
             IconButton(onClick = onToggleBookmark, modifier = Modifier.testTag("bookmark_article_${article.articleNumber}")) {
                 Icon(
                     imageVector = if (isBookmarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
@@ -321,6 +335,7 @@ private fun ConstitutionArticleCard(
 
 @Composable
 private fun CriminalLawTab(viewModel: CivicLensViewModel) {
+    val context = LocalContext.current
     val bookmarks by viewModel.bookmarks.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("All") }
@@ -402,6 +417,15 @@ private fun CriminalLawTab(viewModel: CivicLensViewModel) {
                                 currentlyBookmarked = isBookmarked
                             )
                         },
+                        onShare = {
+                            val shareText = "${section.title}\n\nIPC ${section.oldIpcSection} → BNS ${section.newBnsSection}\n\n${section.description}\n\nPunishment: ${section.punishment}\n\n— Shared from CivicLens AI, Know Your Rights"
+                            val intent = Intent(Intent.ACTION_SEND).apply {
+                                type = "text/plain"
+                                putExtra(Intent.EXTRA_SUBJECT, section.title)
+                                putExtra(Intent.EXTRA_TEXT, shareText)
+                            }
+                            context.startActivity(Intent.createChooser(intent, "Share ${section.title}"))
+                        },
                         modifier = Modifier.testTag("law_section_card_${section.newBnsSection}")
                     )
                 }
@@ -415,6 +439,7 @@ private fun LawSectionCard(
     section: LawSection,
     isBookmarked: Boolean,
     onToggleBookmark: () -> Unit,
+    onShare: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -451,6 +476,9 @@ private fun LawSectionCard(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
+            }
+            IconButton(onClick = onShare, modifier = Modifier.testTag("share_law_${section.newBnsSection}")) {
+                Icon(Icons.Default.Share, contentDescription = "Share", tint = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             IconButton(onClick = onToggleBookmark, modifier = Modifier.testTag("bookmark_law_${section.newBnsSection}")) {
                 Icon(
