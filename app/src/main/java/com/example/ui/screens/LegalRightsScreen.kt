@@ -1,5 +1,6 @@
 package com.example.ui.screens
 
+import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -24,11 +25,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.legal.ConstitutionArticle
+import com.example.data.legal.LandmarkCase
 import com.example.data.legal.LawSection
 import com.example.data.legal.LegalKnowledgeBase
 import com.example.data.legal.RightsTopic
@@ -38,16 +41,30 @@ import kotlinx.coroutines.launch
 
 private const val LEGAL_CHAT_SESSION = "legal"
 
+const val LEGAL_TAB_CONSTITUTION = 0
+const val LEGAL_TAB_CRIMINAL_LAW = 1
+const val LEGAL_TAB_RIGHTS_TOPICS = 2
+const val LEGAL_TAB_AI_CONSULT = 3
+const val LEGAL_TAB_LANDMARK_CASES = 4
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LegalRightsScreen(
     viewModel: CivicLensViewModel,
     onNavigateBack: () -> Unit
 ) {
-    var selectedTab by remember { mutableStateOf(0) }
+    var selectedTab by remember { mutableStateOf(LEGAL_TAB_CONSTITUTION) }
+    val preselectedLegalTab by viewModel.preselectedLegalTab.collectAsState()
+
+    LaunchedEffect(preselectedLegalTab) {
+        preselectedLegalTab?.let { tab ->
+            selectedTab = tab
+            viewModel.clearPreselectedLegalTab()
+        }
+    }
 
     LaunchedEffect(selectedTab) {
-        viewModel.setChatSession(if (selectedTab == 3) LEGAL_CHAT_SESSION else "general")
+        viewModel.setChatSession(if (selectedTab == LEGAL_TAB_AI_CONSULT) LEGAL_CHAT_SESSION else "general")
     }
 
     Scaffold(
@@ -79,29 +96,36 @@ fun LegalRightsScreen(
         ) {
             ScrollableTabRow(selectedTabIndex = selectedTab, edgePadding = 8.dp) {
                 Tab(
-                    selected = selectedTab == 0,
-                    onClick = { selectedTab = 0 },
+                    selected = selectedTab == LEGAL_TAB_CONSTITUTION,
+                    onClick = { selectedTab = LEGAL_TAB_CONSTITUTION },
                     text = { Text("Constitution", fontWeight = FontWeight.Bold, fontSize = 12.sp) },
                     icon = { Icon(Icons.Default.AccountBalance, contentDescription = null, modifier = Modifier.size(18.dp)) },
                     modifier = Modifier.testTag("constitution_tab")
                 )
                 Tab(
-                    selected = selectedTab == 1,
-                    onClick = { selectedTab = 1 },
+                    selected = selectedTab == LEGAL_TAB_CRIMINAL_LAW,
+                    onClick = { selectedTab = LEGAL_TAB_CRIMINAL_LAW },
                     text = { Text("IPC → BNS", fontWeight = FontWeight.Bold, fontSize = 12.sp) },
                     icon = { Icon(Icons.Default.Gavel, contentDescription = null, modifier = Modifier.size(18.dp)) },
                     modifier = Modifier.testTag("criminal_law_tab")
                 )
                 Tab(
-                    selected = selectedTab == 2,
-                    onClick = { selectedTab = 2 },
+                    selected = selectedTab == LEGAL_TAB_RIGHTS_TOPICS,
+                    onClick = { selectedTab = LEGAL_TAB_RIGHTS_TOPICS },
                     text = { Text("Know Your Rights", fontWeight = FontWeight.Bold, fontSize = 12.sp) },
                     icon = { Icon(Icons.Default.Shield, contentDescription = null, modifier = Modifier.size(18.dp)) },
                     modifier = Modifier.testTag("rights_topics_tab")
                 )
                 Tab(
-                    selected = selectedTab == 3,
-                    onClick = { selectedTab = 3 },
+                    selected = selectedTab == LEGAL_TAB_LANDMARK_CASES,
+                    onClick = { selectedTab = LEGAL_TAB_LANDMARK_CASES },
+                    text = { Text("Landmark Cases", fontWeight = FontWeight.Bold, fontSize = 12.sp) },
+                    icon = { Icon(Icons.Default.FormatQuote, contentDescription = null, modifier = Modifier.size(18.dp)) },
+                    modifier = Modifier.testTag("landmark_cases_tab")
+                )
+                Tab(
+                    selected = selectedTab == LEGAL_TAB_AI_CONSULT,
+                    onClick = { selectedTab = LEGAL_TAB_AI_CONSULT },
                     text = { Text("AI Legal Consult", fontWeight = FontWeight.Bold, fontSize = 12.sp) },
                     icon = { Icon(Icons.Default.AutoAwesome, contentDescription = null, modifier = Modifier.size(18.dp)) },
                     modifier = Modifier.testTag("legal_ai_tab")
@@ -109,10 +133,11 @@ fun LegalRightsScreen(
             }
 
             when (selectedTab) {
-                0 -> ConstitutionTab()
-                1 -> CriminalLawTab()
-                2 -> RightsTopicsTab()
-                3 -> LegalAiConsultTab(viewModel = viewModel)
+                LEGAL_TAB_CONSTITUTION -> ConstitutionTab(viewModel = viewModel)
+                LEGAL_TAB_CRIMINAL_LAW -> CriminalLawTab(viewModel = viewModel)
+                LEGAL_TAB_RIGHTS_TOPICS -> RightsTopicsTab(viewModel = viewModel)
+                LEGAL_TAB_LANDMARK_CASES -> LandmarkCasesTab(viewModel = viewModel)
+                LEGAL_TAB_AI_CONSULT -> LegalAiConsultTab(viewModel = viewModel)
             }
         }
     }
@@ -145,7 +170,8 @@ private fun LegalDisclaimerBanner(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun ConstitutionTab() {
+private fun ConstitutionTab(viewModel: CivicLensViewModel) {
+    val bookmarks by viewModel.bookmarks.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf(LegalKnowledgeBase.constitutionCategoryAll) }
 
@@ -204,7 +230,22 @@ private fun ConstitutionTab() {
                 }
             } else {
                 items(filtered) { article ->
-                    ConstitutionArticleCard(article, modifier = Modifier.testTag("article_card_${article.articleNumber}"))
+                    val bookmarkId = "legal_article_${article.articleNumber}"
+                    val isBookmarked = bookmarks.any { it.id == bookmarkId }
+                    ConstitutionArticleCard(
+                        article = article,
+                        isBookmarked = isBookmarked,
+                        onToggleBookmark = {
+                            viewModel.toggleBookmark(
+                                id = bookmarkId,
+                                title = "${article.articleNumber}: ${article.title}",
+                                type = "legal_article",
+                                itemId = article.articleNumber,
+                                currentlyBookmarked = isBookmarked
+                            )
+                        },
+                        modifier = Modifier.testTag("article_card_${article.articleNumber}")
+                    )
                 }
             }
         }
@@ -212,7 +253,12 @@ private fun ConstitutionTab() {
 }
 
 @Composable
-private fun ConstitutionArticleCard(article: ConstitutionArticle, modifier: Modifier = Modifier) {
+private fun ConstitutionArticleCard(
+    article: ConstitutionArticle,
+    isBookmarked: Boolean,
+    onToggleBookmark: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     var expanded by remember { mutableStateOf(false) }
 
     GlassCard(
@@ -245,6 +291,13 @@ private fun ConstitutionArticleCard(article: ConstitutionArticle, modifier: Modi
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }
+            IconButton(onClick = onToggleBookmark, modifier = Modifier.testTag("bookmark_article_${article.articleNumber}")) {
+                Icon(
+                    imageVector = if (isBookmarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
+                    contentDescription = "Bookmark Article",
+                    tint = if (isBookmarked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
             Icon(
                 imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
                 contentDescription = if (expanded) "Collapse" else "Expand",
@@ -267,7 +320,8 @@ private fun ConstitutionArticleCard(article: ConstitutionArticle, modifier: Modi
 }
 
 @Composable
-private fun CriminalLawTab() {
+private fun CriminalLawTab(viewModel: CivicLensViewModel) {
+    val bookmarks by viewModel.bookmarks.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("All") }
 
@@ -334,7 +388,22 @@ private fun CriminalLawTab() {
                 }
             } else {
                 items(filtered) { section ->
-                    LawSectionCard(section, modifier = Modifier.testTag("law_section_card_${section.newBnsSection}"))
+                    val bookmarkId = "legal_law_${section.newBnsSection}"
+                    val isBookmarked = bookmarks.any { it.id == bookmarkId }
+                    LawSectionCard(
+                        section = section,
+                        isBookmarked = isBookmarked,
+                        onToggleBookmark = {
+                            viewModel.toggleBookmark(
+                                id = bookmarkId,
+                                title = "${section.title} (BNS ${section.newBnsSection})",
+                                type = "legal_law_section",
+                                itemId = section.newBnsSection,
+                                currentlyBookmarked = isBookmarked
+                            )
+                        },
+                        modifier = Modifier.testTag("law_section_card_${section.newBnsSection}")
+                    )
                 }
             }
         }
@@ -342,7 +411,12 @@ private fun CriminalLawTab() {
 }
 
 @Composable
-private fun LawSectionCard(section: LawSection, modifier: Modifier = Modifier) {
+private fun LawSectionCard(
+    section: LawSection,
+    isBookmarked: Boolean,
+    onToggleBookmark: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     var expanded by remember { mutableStateOf(false) }
 
     GlassCard(modifier = modifier.clickable { expanded = !expanded }) {
@@ -376,6 +450,13 @@ private fun LawSectionCard(section: LawSection, modifier: Modifier = Modifier) {
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+            IconButton(onClick = onToggleBookmark, modifier = Modifier.testTag("bookmark_law_${section.newBnsSection}")) {
+                Icon(
+                    imageVector = if (isBookmarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
+                    contentDescription = "Bookmark Section",
+                    tint = if (isBookmarked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             Icon(
@@ -418,7 +499,9 @@ private fun LawSectionCard(section: LawSection, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun RightsTopicsTab() {
+private fun RightsTopicsTab(viewModel: CivicLensViewModel) {
+    val context = LocalContext.current
+    val bookmarks by viewModel.bookmarks.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
     val filtered = LegalKnowledgeBase.rightsTopics.filter {
         it.title.contains(searchQuery, ignoreCase = true) || it.summary.contains(searchQuery, ignoreCase = true)
@@ -453,7 +536,33 @@ private fun RightsTopicsTab() {
                 }
             } else {
                 items(filtered) { topic ->
-                    RightsTopicCard(topic, modifier = Modifier.testTag("rights_topic_card_${topic.title.take(8)}"))
+                    val bookmarkId = "legal_rights_${topic.title.hashCode()}"
+                    val isBookmarked = bookmarks.any { it.id == bookmarkId }
+                    RightsTopicCard(
+                        topic = topic,
+                        isBookmarked = isBookmarked,
+                        onToggleBookmark = {
+                            viewModel.toggleBookmark(
+                                id = bookmarkId,
+                                title = topic.title,
+                                type = "legal_rights_topic",
+                                itemId = topic.title,
+                                currentlyBookmarked = isBookmarked
+                            )
+                        },
+                        onShare = {
+                            val shareText = "${topic.title}\n\n${topic.summary}\n\n" +
+                                topic.keyPoints.joinToString("\n") { "• $it" } +
+                                "\n\n— Shared from CivicLens AI, Know Your Rights"
+                            val intent = Intent(Intent.ACTION_SEND).apply {
+                                type = "text/plain"
+                                putExtra(Intent.EXTRA_SUBJECT, topic.title)
+                                putExtra(Intent.EXTRA_TEXT, shareText)
+                            }
+                            context.startActivity(Intent.createChooser(intent, "Share ${topic.title}"))
+                        },
+                        modifier = Modifier.testTag("rights_topic_card_${topic.title.take(8)}")
+                    )
                 }
             }
         }
@@ -461,7 +570,13 @@ private fun RightsTopicsTab() {
 }
 
 @Composable
-private fun RightsTopicCard(topic: RightsTopic, modifier: Modifier = Modifier) {
+private fun RightsTopicCard(
+    topic: RightsTopic,
+    isBookmarked: Boolean,
+    onToggleBookmark: () -> Unit,
+    onShare: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     var expanded by remember { mutableStateOf(false) }
 
     GlassCard(modifier = modifier.clickable { expanded = !expanded }) {
@@ -483,6 +598,16 @@ private fun RightsTopicCard(topic: RightsTopic, modifier: Modifier = Modifier) {
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+            IconButton(onClick = onShare, modifier = Modifier.testTag("share_rights_${topic.title.take(8)}")) {
+                Icon(Icons.Default.Share, contentDescription = "Share", tint = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            IconButton(onClick = onToggleBookmark, modifier = Modifier.testTag("bookmark_rights_${topic.title.take(8)}")) {
+                Icon(
+                    imageVector = if (isBookmarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
+                    contentDescription = "Bookmark Topic",
+                    tint = if (isBookmarked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             Icon(
@@ -524,6 +649,181 @@ private fun RightsTopicCard(topic: RightsTopic, modifier: Modifier = Modifier) {
                         )
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun LandmarkCasesTab(viewModel: CivicLensViewModel) {
+    val context = LocalContext.current
+    val bookmarks by viewModel.bookmarks.collectAsState()
+    var searchQuery by remember { mutableStateOf("") }
+    var selectedCategory by remember { mutableStateOf("All") }
+
+    val filtered = LegalKnowledgeBase.landmarkCases.filter { case ->
+        val matchesSearch = case.caseName.contains(searchQuery, ignoreCase = true) ||
+                case.holding.contains(searchQuery, ignoreCase = true) ||
+                case.significance.contains(searchQuery, ignoreCase = true)
+        val matchesCategory = selectedCategory == "All" || case.category == selectedCategory
+        matchesSearch && matchesCategory
+    }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = { searchQuery = it },
+            placeholder = { Text("Search landmark judgments, e.g. \"privacy\", \"basic structure\"...") },
+            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .testTag("landmark_search_input"),
+            shape = RoundedCornerShape(12.dp)
+        )
+
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(LegalKnowledgeBase.landmarkCaseCategories) { category ->
+                FilterChip(
+                    selected = selectedCategory == category,
+                    onClick = { selectedCategory = category },
+                    label = { Text(category, fontSize = 12.sp) },
+                    modifier = Modifier.testTag("landmark_chip_$category")
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            item { LegalDisclaimerBanner() }
+            if (filtered.isEmpty()) {
+                item {
+                    Text(
+                        "No matching landmark judgments found.",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(vertical = 24.dp)
+                    )
+                }
+            } else {
+                items(filtered) { case ->
+                    val bookmarkId = "legal_case_${case.caseName.hashCode()}"
+                    val isBookmarked = bookmarks.any { it.id == bookmarkId }
+                    LandmarkCaseCard(
+                        case = case,
+                        isBookmarked = isBookmarked,
+                        onToggleBookmark = {
+                            viewModel.toggleBookmark(
+                                id = bookmarkId,
+                                title = "${case.caseName} (${case.year})",
+                                type = "legal_case",
+                                itemId = case.caseName,
+                                currentlyBookmarked = isBookmarked
+                            )
+                        },
+                        onShare = {
+                            val shareText = "${case.caseName} (${case.year})\n\n" +
+                                "Holding: ${case.holding}\n\n" +
+                                "Significance: ${case.significance}\n\n" +
+                                "— Shared from CivicLens AI, Know Your Rights"
+                            val intent = Intent(Intent.ACTION_SEND).apply {
+                                type = "text/plain"
+                                putExtra(Intent.EXTRA_SUBJECT, case.caseName)
+                                putExtra(Intent.EXTRA_TEXT, shareText)
+                            }
+                            context.startActivity(Intent.createChooser(intent, "Share ${case.caseName}"))
+                        },
+                        modifier = Modifier.testTag("landmark_case_card_${case.caseName.take(8)}")
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun LandmarkCaseCard(
+    case: LandmarkCase,
+    isBookmarked: Boolean,
+    onToggleBookmark: () -> Unit,
+    onShare: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    GlassCard(modifier = modifier.clickable { expanded = !expanded }) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f))
+                            .padding(horizontal = 8.dp, vertical = 2.dp)
+                    ) {
+                        Text(case.year, fontSize = 10.sp, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.primary)
+                    }
+                    Text(
+                        text = case.category.uppercase(),
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = case.caseName,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+            IconButton(onClick = onShare, modifier = Modifier.testTag("share_case_${case.caseName.take(8)}")) {
+                Icon(Icons.Default.Share, contentDescription = "Share", tint = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            IconButton(onClick = onToggleBookmark, modifier = Modifier.testTag("bookmark_case_${case.caseName.take(8)}")) {
+                Icon(
+                    imageVector = if (isBookmarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
+                    contentDescription = "Bookmark Case",
+                    tint = if (isBookmarked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Icon(
+                imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                contentDescription = if (expanded) "Collapse" else "Expand",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+
+        AnimatedVisibility(visible = expanded, enter = expandVertically() + fadeIn(), exit = shrinkVertically() + fadeOut()) {
+            Column {
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(
+                    text = "Holding: ${case.holding}",
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    lineHeight = 18.sp
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = case.significance,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    lineHeight = 18.sp
+                )
             }
         }
     }

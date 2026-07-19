@@ -29,6 +29,14 @@ data class RightsTopic(
     val category: String
 )
 
+data class LandmarkCase(
+    val caseName: String,
+    val year: String,
+    val holding: String,
+    val significance: String,
+    val category: String
+)
+
 object LegalKnowledgeBase {
 
     const val constitutionCategoryAll = "All"
@@ -317,6 +325,81 @@ object LegalKnowledgeBase {
                 "Public Interest Litigation (PIL) allows any public-spirited citizen to approach the Court on behalf of those unable to do so themselves."
             ),
             "Criminal Justice"
+        )
+    )
+
+    val landmarkCaseCategories = listOf("All", "Fundamental Rights", "Basic Structure", "Personal Liberty", "Equality & Reservation", "Federalism")
+
+    val landmarkCases: List<LandmarkCase> = listOf(
+        LandmarkCase(
+            "Kesavananda Bharati v. State of Kerala",
+            "1973",
+            "Parliament's power to amend the Constitution under Article 368 is not unlimited — it cannot alter the Constitution's 'Basic Structure'.",
+            "Established the Basic Structure Doctrine, the single most important check on Parliament's amending power; features like judicial review, federalism, secularism, and free elections cannot be abrogated even by constitutional amendment.",
+            "Basic Structure"
+        ),
+        LandmarkCase(
+            "Maneka Gandhi v. Union of India",
+            "1978",
+            "The 'procedure established by law' under Article 21 must be fair, just, and reasonable — not arbitrary.",
+            "Transformed Article 21 from a narrow procedural guarantee into an expansive substantive right, effectively linking Articles 14, 19, and 21 together and paving the way for later expansions (privacy, dignity, livelihood, environment).",
+            "Personal Liberty"
+        ),
+        LandmarkCase(
+            "Minerva Mills Ltd. v. Union of India",
+            "1980",
+            "A constitutional amendment giving Directive Principles (Part IV) unconditional primacy over Fundamental Rights (Part III) was struck down.",
+            "Reinforced the Basic Structure Doctrine by holding that the harmony and balance between Fundamental Rights and Directive Principles is itself part of the Constitution's basic structure.",
+            "Basic Structure"
+        ),
+        LandmarkCase(
+            "Olga Tellis v. Bombay Municipal Corporation",
+            "1985",
+            "The right to life under Article 21 includes the right to livelihood, since no person can live without the means of living.",
+            "Extended Article 21 to protect pavement dwellers from eviction without due process, establishing that eviction affecting livelihood must follow a fair procedure.",
+            "Personal Liberty"
+        ),
+        LandmarkCase(
+            "Vishaka v. State of Rajasthan",
+            "1997",
+            "In the absence of specific legislation, the Supreme Court laid down binding guidelines to prevent sexual harassment of women at the workplace.",
+            "The 'Vishaka Guidelines' filled a legislative vacuum for over 15 years until they were codified into the POSH Act, 2013, and remain a landmark example of the judiciary protecting Fundamental Rights (Articles 14, 15, 21) where the legislature had not acted.",
+            "Fundamental Rights"
+        ),
+        LandmarkCase(
+            "Indra Sawhney v. Union of India",
+            "1992",
+            "Upheld reservations for socially and educationally backward classes (OBCs) in government jobs, while capping total reservations at 50% (subject to exceptions) and introducing the 'creamy layer' exclusion.",
+            "Remains the guiding precedent on the constitutional limits and structure of caste-based reservation policy under Article 16(4).",
+            "Equality & Reservation"
+        ),
+        LandmarkCase(
+            "S. R. Bommai v. Union of India",
+            "1994",
+            "Laid down strict guidelines curbing the misuse of Article 356 (President's Rule) to dismiss state governments for political reasons, and held secularism to be part of the basic structure.",
+            "Significantly limited arbitrary Central Government intervention in state governance, strengthening India's federal structure.",
+            "Federalism"
+        ),
+        LandmarkCase(
+            "Shayara Bano v. Union of India",
+            "2017",
+            "The practice of 'instant' Triple Talaq (talaq-e-biddat) was declared unconstitutional as it violated Article 14.",
+            "Led directly to the Muslim Women (Protection of Rights on Marriage) Act, 2019, criminalizing instant triple talaq.",
+            "Fundamental Rights"
+        ),
+        LandmarkCase(
+            "K. S. Puttaswamy v. Union of India",
+            "2017",
+            "A unanimous nine-judge bench held that the right to privacy is a Fundamental Right, intrinsic to life and personal liberty under Article 21.",
+            "Became the constitutional foundation for later privacy and data-protection legislation, including the Digital Personal Data Protection Act, 2023, and shaped subsequent rulings on Aadhaar, LGBTQ+ rights, and personal autonomy.",
+            "Personal Liberty"
+        ),
+        LandmarkCase(
+            "Navtej Singh Johar v. Union of India",
+            "2018",
+            "Read down Section 377 of the erstwhile IPC to decriminalize consensual same-sex relations between adults.",
+            "A landmark win for LGBTQ+ rights in India, holding that Section 377 (as applied to consensual adult relationships) violated Articles 14, 15, 19, and 21.",
+            "Fundamental Rights"
         )
     )
 }

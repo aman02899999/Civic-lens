@@ -56,13 +56,24 @@ fun NewsScreen(
     var selectedVerdictFilter by remember { mutableStateOf<String?>(null) }
     var filterExpanded by remember { mutableStateOf(false) }
 
-    val filterOptions = listOf(
-        "All Sources / Databases",
-        "Press Information Bureau (PIB)",
-        "Election Commission of India (ECI)",
-        "Ministry Portals & PIB",
-        "Live AI Grounded Feed"
-    )
+    // "Live AI Grounded Feed" only ever matches live_-prefixed articles, which are exclusively
+    // shown on the Live AI Feed tab — omit it elsewhere so it can't be picked as a dead-end filter.
+    val filterOptions = if (selectedTab == 2) {
+        listOf(
+            "All Sources / Databases",
+            "Press Information Bureau (PIB)",
+            "Election Commission of India (ECI)",
+            "Ministry Portals & PIB",
+            "Live AI Grounded Feed"
+        )
+    } else {
+        listOf(
+            "All Sources / Databases",
+            "Press Information Bureau (PIB)",
+            "Election Commission of India (ECI)",
+            "Ministry Portals & PIB"
+        )
+    }
 
     val baseFilteredNews = news.filter {
         when (selectedTab) {
