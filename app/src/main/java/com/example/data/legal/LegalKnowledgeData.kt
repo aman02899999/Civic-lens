@@ -416,9 +416,26 @@ object LegalKnowledgeBase {
         )
     )
 
-    val landmarkCaseCategories = listOf("All", "Fundamental Rights", "Basic Structure", "Personal Liberty", "Equality & Reservation", "Federalism")
+    val landmarkCaseCategories = listOf(
+        "All", "Fundamental Rights", "Basic Structure", "Personal Liberty", "Equality & Reservation",
+        "Federalism", "Environmental Law", "Digital Rights"
+    )
 
     val landmarkCases: List<LandmarkCase> = listOf(
+        LandmarkCase(
+            "A. K. Gopalan v. State of Madras",
+            "1950",
+            "Adopted a narrow, literal reading of Article 21 — holding that 'procedure established by law' only required that some procedure be laid down by a validly enacted law, without any requirement that the procedure be fair or reasonable.",
+            "One of the Supreme Court's earliest constitutional rulings; its narrow view of personal liberty stood for nearly three decades until it was effectively overturned by Maneka Gandhi v. Union of India (1978), which read fairness and reasonableness into Article 21.",
+            "Personal Liberty"
+        ),
+        LandmarkCase(
+            "I. C. Golaknath v. State of Punjab",
+            "1967",
+            "Held that Parliament could not amend Part III (Fundamental Rights) of the Constitution at all, treating a constitutional amendment as 'law' subject to Article 13.",
+            "Prompted Parliament to enact the 24th Amendment (1971) asserting its power to amend any part of the Constitution, which in turn set up the constitutional confrontation resolved by Kesavananda Bharati v. State of Kerala (1973) and the Basic Structure Doctrine.",
+            "Basic Structure"
+        ),
         LandmarkCase(
             "Kesavananda Bharati v. State of Kerala",
             "1973",
@@ -488,6 +505,34 @@ object LegalKnowledgeBase {
             "Read down Section 377 of the erstwhile IPC to decriminalize consensual same-sex relations between adults.",
             "A landmark win for LGBTQ+ rights in India, holding that Section 377 (as applied to consensual adult relationships) violated Articles 14, 15, 19, and 21.",
             "Fundamental Rights"
+        ),
+        LandmarkCase(
+            "M. C. Mehta v. Union of India (Oleum Gas Leak Case)",
+            "1987",
+            "Introduced the principle of 'Absolute Liability' for enterprises engaged in hazardous or inherently dangerous activities — such an enterprise owes an absolute, non-delegable duty to the community and cannot claim any exception even if it took all reasonable precautions.",
+            "A foundational judgment in Indian environmental and industrial-safety jurisprudence, going further than the English 'strict liability' rule and directly shaping later environmental compensation cases, including the Bhopal Gas Tragedy litigation.",
+            "Environmental Law"
+        ),
+        LandmarkCase(
+            "Justice K. S. Puttaswamy (Aadhaar) v. Union of India",
+            "2018",
+            "Upheld the constitutional validity of the Aadhaar scheme by a 4:1 majority, while striking down provisions allowing private companies to mandate Aadhaar for services and restricting mandatory linkage to welfare subsidies, PAN, and income tax filing.",
+            "Balanced the State's interest in targeted welfare delivery against the right to privacy recognized in the 2017 Puttaswamy privacy judgment, and directly shaped the framework later reflected in the Digital Personal Data Protection Act, 2023.",
+            "Digital Rights"
+        ),
+        LandmarkCase(
+            "Anuradha Bhasin v. Union of India",
+            "2020",
+            "Held that access to the internet is an integral part of the freedom of speech and expression under Article 19(1)(a) and the freedom to carry on trade/business under Article 19(1)(g), and that indefinite internet shutdowns are impermissible.",
+            "Required that any order suspending internet access be temporary, subject to judicial review, and proportionate — a key precedent constraining government-ordered internet shutdowns, decided in the context of restrictions in Jammu & Kashmir.",
+            "Digital Rights"
+        ),
+        LandmarkCase(
+            "Common Cause v. Union of India",
+            "2018",
+            "Recognized the right to die with dignity as part of the right to life under Article 21, legalizing passive euthanasia and permitting individuals to execute a 'living will' specifying that they not be put on life support in a terminal, vegetative state.",
+            "Extended the scope of Article 21 into end-of-life autonomy, laying down detailed guidelines and safeguards for passive euthanasia to be followed by patients, families, and medical boards.",
+            "Personal Liberty"
         )
     )
 }
