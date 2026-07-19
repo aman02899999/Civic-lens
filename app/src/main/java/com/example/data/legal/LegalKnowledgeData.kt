@@ -42,7 +42,7 @@ object LegalKnowledgeBase {
     const val constitutionCategoryAll = "All"
     val constitutionCategories = listOf(
         "All", "Preamble", "Citizenship", "Fundamental Rights", "Fundamental Duties", "DPSP",
-        "Emergency Provisions", "Amendment Procedure"
+        "Property Rights", "Emergency Provisions", "Amendment Procedure"
     )
 
     val constitutionArticles: List<ConstitutionArticle> = listOf(
@@ -155,6 +155,18 @@ object LegalKnowledgeBase {
             "Fundamental Rights"
         ),
         ConstitutionArticle(
+            "Article 38",
+            "State to Secure a Social Order for the Welfare of the People",
+            "Directs the State to promote the welfare of the people by securing and protecting a social order in which justice — social, economic, and political — informs all institutions of national life, and to minimize inequalities in income, status, facilities, and opportunities.",
+            "DPSP"
+        ),
+        ConstitutionArticle(
+            "Article 39(b)(c)",
+            "Equitable Distribution of Material Resources",
+            "Directs the State to ensure that ownership and control of the community's material resources are distributed to best subserve the common good, and that the economic system does not result in the concentration of wealth and means of production to the common detriment.",
+            "DPSP"
+        ),
+        ConstitutionArticle(
             "Article 39A",
             "Equal Justice and Free Legal Aid",
             "Directs the State to ensure the operation of the legal system promotes justice on a basis of equal opportunity and to provide free legal aid to ensure no citizen is denied justice due to economic or other disability.",
@@ -167,9 +179,27 @@ object LegalKnowledgeBase {
             "DPSP"
         ),
         ConstitutionArticle(
+            "Article 43",
+            "Living Wage for Workers",
+            "Directs the State to endeavour to secure, through suitable legislation or economic organization, a living wage, a decent standard of life, and full enjoyment of leisure and social and cultural opportunities for all workers — agricultural, industrial, or otherwise.",
+            "DPSP"
+        ),
+        ConstitutionArticle(
             "Article 44",
             "Uniform Civil Code",
             "The State shall endeavour to secure a Uniform Civil Code for citizens throughout the territory of India.",
+            "DPSP"
+        ),
+        ConstitutionArticle(
+            "Article 46",
+            "Promotion of Educational and Economic Interests of SC, ST, and Weaker Sections",
+            "Directs the State to promote, with special care, the educational and economic interests of the weaker sections of the people — particularly Scheduled Castes and Scheduled Tribes — and to protect them from social injustice and all forms of exploitation.",
+            "DPSP"
+        ),
+        ConstitutionArticle(
+            "Article 47",
+            "Duty to Raise Nutrition, Standard of Living, and Public Health",
+            "Directs the State to regard raising the level of nutrition and the standard of living of its people, and improving public health, as among its primary duties, and to endeavour to bring about prohibition of intoxicating drinks and drugs injurious to health, except for medicinal purposes.",
             "DPSP"
         ),
         ConstitutionArticle(
@@ -189,6 +219,12 @@ object LegalKnowledgeBase {
             "Fundamental Duties of Every Citizen",
             "Added by the 42nd Amendment (1976): abide by the Constitution and respect its ideals, the National Flag and National Anthem; cherish the noble ideals of the freedom struggle; uphold sovereignty, unity and integrity of India; defend the country; promote harmony and brotherhood; value and preserve composite culture; protect the environment; develop scientific temper and humanism; safeguard public property and abjure violence; strive towards excellence; and (added by the 86th Amendment, 2002) provide opportunities for education to one's child/ward between ages 6-14.",
             "Fundamental Duties"
+        ),
+        ConstitutionArticle(
+            "Article 300A",
+            "Right to Property",
+            "No person shall be deprived of their property save by authority of law. Property was originally a Fundamental Right under Articles 19(1)(f) and 31, but the 44th Amendment Act, 1978 removed it from Part III, downgrading it to this standalone constitutional/legal right in Part XII. It can still be enforced through ordinary courts (not directly via Article 32), and the State must follow a valid law and fair procedure before depriving a person of their property.",
+            "Property Rights"
         ),
         ConstitutionArticle(
             "Article 352",
