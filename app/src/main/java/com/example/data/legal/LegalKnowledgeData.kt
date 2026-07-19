@@ -218,7 +218,7 @@ object LegalKnowledgeBase {
 
     val criminalLawCategories = listOf(
         "All", "Offences Against the Body", "Sexual & Gender Offences", "Property Offences",
-        "Public Order & State", "Marriage & Family", "Cyber & Documents"
+        "Public Order & State", "Marriage & Family", "Cyber & Documents", "Labour & Employment Offences"
     )
 
     /**
@@ -245,6 +245,13 @@ object LegalKnowledgeBase {
         LawSection("411", "317", "Dishonestly Receiving Stolen Property", "Receiving or retaining stolen property knowing or having reason to believe it is stolen.", "Up to 3 years, or fine, or both", "Property Offences"),
         LawSection("420", "318", "Cheating and Dishonestly Inducing Delivery of Property", "Deceiving a person to fraudulently or dishonestly induce delivery of property, or to consent to retention of property.", "Up to 7 years, plus fine", "Property Offences"),
         LawSection("447", "329", "Criminal Trespass", "Entering or remaining unlawfully on another's property with intent to commit an offence, intimidate, insult, or annoy.", "Up to 3 months, or fine, or both", "Property Offences"),
+        LawSection("403", "314", "Dishonest Misappropriation of Property", "Dishonestly using or disposing of movable property (e.g., property found or held in trust) for one's own use, without the owner's consent.", "Up to 2 years, or fine, or both", "Property Offences"),
+        LawSection("405 / 406", "316(1) / 316(2)", "Criminal Breach of Trust", "Dishonestly using or disposing of property entrusted to a person's care, in violation of the terms of that trust or any legal contract.", "Up to 3 years, or fine, or both", "Property Offences"),
+        LawSection("409", "316(5)", "Criminal Breach of Trust by Public Servant, Banker, or Agent", "A more severe form of criminal breach of trust committed by a public servant, banker, merchant, factor, broker, attorney, or agent in that capacity.", "Up to 10 years to life imprisonment, plus fine", "Property Offences"),
+        LawSection("383 / 384", "308(1) / 308(2)", "Extortion", "Intentionally putting a person in fear of injury to dishonestly induce them to deliver property, valuable security, or anything signed/sealed that may be converted into a valuable security.", "Up to 7 years, plus fine", "Property Offences"),
+        LawSection("425 / 426", "324(1) / 324(2)", "Mischief", "Causing wrongful loss or damage to public or private property with intent to cause, or knowledge that the act is likely to cause, such loss or damage.", "Up to 3 months to 1 year, or fine, or both, depending on the property and value affected", "Property Offences"),
+        LawSection("374", "127(2)", "Unlawful Compulsory Labour", "Unlawfully compelling any person to labour against that person's will — the core Penal Code provision underpinning protections against forced and bonded labour, alongside Article 23 of the Constitution and the Bonded Labour System (Abolition) Act, 1976.", "Up to 1 year, or fine, or both", "Labour & Employment Offences"),
+        LawSection("370 / 370A", "143 / 144", "Trafficking of Persons & Exploitation of a Trafficked Person", "Recruiting, transporting, harbouring, or receiving a person by force, fraud, or coercion for exploitation — including forced labour, bonded labour, and physical exploitation; Section 370A separately punishes knowingly engaging a trafficked person for labour or sexual exploitation.", "7 years to life imprisonment, plus fine, depending on the victim's age and severity of exploitation", "Labour & Employment Offences"),
         LawSection("499 / 500", "356", "Defamation", "Making or publishing an imputation concerning a person intending to harm, or with reason to believe it will harm, their reputation.", "Up to 2 years, or fine, or both (simple imprisonment)", "Cyber & Documents"),
         LawSection("463 / 465", "336 / 338", "Forgery", "Making a false document or electronic record with intent to cause damage, support a claim, or commit fraud.", "Up to 2-7 years depending on the document type, plus fine", "Cyber & Documents"),
         LawSection("141 / 144 (unlawful assembly, CrPC prohibitory order)", "189 (BNS) / 163 (BNSS)", "Unlawful Assembly & Prohibitory Orders", "Five or more persons assembled with a common unlawful object; and the procedural power of a magistrate to prohibit assembly/movement to prevent public disturbance.", "Up to 6 months to 2 years depending on the object of assembly", "Public Order & State"),
