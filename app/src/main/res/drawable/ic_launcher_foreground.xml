@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    
+    <!-- Outer Lens Ring (White) -->
+    <path
+        android:pathData="M 54,22 A 32,32 0 1,1 53.99,22 Z"
+        android:strokeWidth="4"
+        android:strokeColor="#FFFFFF"
+        android:fillColor="#1AFFFFFF" />
+
+    <!-- Inner Shield of Truth (White Semi-transparent Fill) -->
+    <path
+        android:pathData="M54,34 L40,40 L40,56 C40,68 46,79 54,82 C62,79 68,68 68,56 L68,40 Z"
+        android:fillColor="#EEFFFFFF"
+        android:strokeWidth="2"
+        android:strokeColor="#FFFFFF" />
+
+    <!-- Verification Checkmark (Vivid Blue Fill) -->
+    <path
+        android:pathData="M47,61 L42,56 L44.5,53.5 L47,56 L59.5,43.5 L62,46 Z"
+        android:fillColor="#1E88E5" />
+</vector>

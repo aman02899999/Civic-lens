@@ -1,0 +1,6 @@
+{
+  "name": "CivicLens AI",
+  "description": "Verified Election Intelligence. Compare Facts. Decide Yourself.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
