@@ -40,7 +40,10 @@ data class LandmarkCase(
 object LegalKnowledgeBase {
 
     const val constitutionCategoryAll = "All"
-    val constitutionCategories = listOf("All", "Preamble", "Fundamental Rights", "Fundamental Duties", "DPSP")
+    val constitutionCategories = listOf(
+        "All", "Preamble", "Citizenship", "Fundamental Rights", "Fundamental Duties", "DPSP",
+        "Emergency Provisions", "Amendment Procedure"
+    )
 
     val constitutionArticles: List<ConstitutionArticle> = listOf(
         ConstitutionArticle(
@@ -48,6 +51,24 @@ object LegalKnowledgeBase {
             "We, the People of India",
             "Declares India a Sovereign, Socialist, Secular, Democratic Republic securing to all citizens Justice (social, economic, political), Liberty (of thought, expression, belief, faith, worship), Equality (of status and opportunity), and promoting Fraternity assuring dignity of the individual and unity and integrity of the Nation.",
             "Preamble"
+        ),
+        ConstitutionArticle(
+            "Article 5-8",
+            "Citizenship at Commencement & Migration",
+            "Part II of the Constitution deals with citizenship as it stood on 26 January 1950. Article 5 grants citizenship to persons domiciled in India at commencement; Articles 6 and 7 address the citizenship of persons who migrated to or from Pakistan around Partition; Article 8 covers persons of Indian origin residing outside India who registered as citizens with an Indian diplomatic mission.",
+            "Citizenship"
+        ),
+        ConstitutionArticle(
+            "Article 9",
+            "No Dual Citizenship",
+            "Any person who voluntarily acquires the citizenship of a foreign State ceases to be an Indian citizen. India does not recognize dual citizenship — the Overseas Citizen of India (OCI) card is a long-term visa-like status, not citizenship.",
+            "Citizenship"
+        ),
+        ConstitutionArticle(
+            "Article 11",
+            "Parliament's Power to Regulate Citizenship",
+            "Parliament has full power to make any provision for the acquisition and termination of citizenship, and all other matters relating to it. Exercised through the Citizenship Act, 1955, and its amendments — including provisions for citizenship by birth, descent, registration, and naturalization, the Overseas Citizen of India (OCI) scheme, and the Citizenship (Amendment) Act, 2019.",
+            "Citizenship"
         ),
         ConstitutionArticle(
             "Article 14",
@@ -168,6 +189,30 @@ object LegalKnowledgeBase {
             "Fundamental Duties of Every Citizen",
             "Added by the 42nd Amendment (1976): abide by the Constitution and respect its ideals, the National Flag and National Anthem; cherish the noble ideals of the freedom struggle; uphold sovereignty, unity and integrity of India; defend the country; promote harmony and brotherhood; value and preserve composite culture; protect the environment; develop scientific temper and humanism; safeguard public property and abjure violence; strive towards excellence; and (added by the 86th Amendment, 2002) provide opportunities for education to one's child/ward between ages 6-14.",
             "Fundamental Duties"
+        ),
+        ConstitutionArticle(
+            "Article 352",
+            "National Emergency",
+            "The President may proclaim a National Emergency if satisfied that the security of India or any part of it is threatened by war, external aggression, or armed rebellion. The proclamation must be approved by both Houses of Parliament within one month (by special majority) to continue, and is subject to review every 6 months. During a National Emergency, Article 19 freedoms may be suspended if the emergency is due to war or external aggression, and the enforcement of other Fundamental Rights (except Articles 20 and 21) can be suspended. Invoked in 1962 (China war), 1971 (Pakistan war), and 1975 (internal disturbance — the 'Emergency').",
+            "Emergency Provisions"
+        ),
+        ConstitutionArticle(
+            "Article 356",
+            "President's Rule (State Emergency)",
+            "If the President, on receipt of a report from the State Governor or otherwise, is satisfied that a State's government cannot be carried on in accordance with the Constitution, President's Rule may be imposed — dissolving or suspending the State government and legislature, with the State administered directly by the Union. Must be approved by Parliament within 2 months and cannot ordinarily extend beyond 3 years. The Supreme Court's ruling in S. R. Bommai v. Union of India (1994) subjected this power to judicial review to curb its misuse for purely political ends.",
+            "Emergency Provisions"
+        ),
+        ConstitutionArticle(
+            "Article 360",
+            "Financial Emergency",
+            "The President may proclaim a Financial Emergency if satisfied that the financial stability or credit of India, or any part of its territory, is threatened. It permits the Union to direct States on financial matters, including reducing salaries of government servants and judges. Unlike National Emergency and President's Rule, a Financial Emergency has never been proclaimed in India's history.",
+            "Emergency Provisions"
+        ),
+        ConstitutionArticle(
+            "Article 368",
+            "Amendment of the Constitution",
+            "Parliament's power to amend the Constitution operates through three routes: (1) by a simple majority for certain provisions (e.g., creation of new states); (2) by a 'special majority' — a majority of the total membership of each House and a two-thirds majority of members present and voting — for most provisions, including Fundamental Rights; and (3) by a special majority plus ratification by at least half of the State Legislatures, for provisions affecting the federal structure (e.g., election of the President, distribution of legislative powers). This amending power is itself limited by the Basic Structure Doctrine established in Kesavananda Bharati v. State of Kerala (1973) — Parliament cannot use Article 368 to destroy the Constitution's basic structure.",
+            "Amendment Procedure"
         )
     )
 
