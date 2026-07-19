@@ -513,9 +513,40 @@ fun CompareScreen(
                         }
 
                         item {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                "Party Work Comparison: Achievements & Delivery Record",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                "Verified, publicly reported work delivered by each party, compared side-by-side.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(top = 2.dp)
+                            )
+                        }
+
+                        item {
+                            GlassCard(modifier = Modifier.fillMaxWidth().testTag("party_work_comparison_card")) {
+                                CompareAttributeRow(
+                                    "Achievements & Work Done",
+                                    party1!!.achievements.joinToString("\n") { "• $it" },
+                                    party2!!.achievements.joinToString("\n") { "• $it" }
+                                )
+                                CompareAttributeRow(
+                                    "Recent Press Releases",
+                                    party1!!.pressReleases.joinToString("\n") { "• $it" },
+                                    party2!!.pressReleases.joinToString("\n") { "• $it" }
+                                )
+                            }
+                        }
+
+                        item {
                             Button(
                                 onClick = {
-                                    viewModel.askAssistant("Synthesize comparison of manifestos and economic development strategies between ${party1!!.name} and ${party2!!.name}.")
+                                    viewModel.askAssistant("Compare the actual delivered work, achievements, and manifesto promises kept vs pending between ${party1!!.name} and ${party2!!.name}, citing official sources.")
                                     onNavigateToAssistant()
                                 },
                                 modifier = Modifier
@@ -524,7 +555,7 @@ fun CompareScreen(
                             ) {
                                 Icon(Icons.Default.AutoAwesome, contentDescription = null)
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("Synthesize Manifesto Comparison", fontWeight = FontWeight.Bold)
+                                Text("Synthesize Work & Manifesto Comparison", fontWeight = FontWeight.Bold)
                             }
                         }
                     }

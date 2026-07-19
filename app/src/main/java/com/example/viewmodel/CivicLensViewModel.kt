@@ -145,24 +145,35 @@ class CivicLensViewModel(
     }
 
     // --- AI Assistant RAG Query ---
-    fun askAssistant(query: String, isThinkingMode: Boolean = false) {
+    fun askAssistant(query: String, isThinkingMode: Boolean = false, domain: String = "civic") {
         if (query.isBlank()) return
-        
+
+        // Authoritatively route to the correct session for this domain, regardless of whatever
+        // session was last active (e.g. a prior visit to the Legal AI consult tab), so messages
+        // never get misfiled into the wrong chat history.
+        val targetSession = if (domain == "legal") "legal" else "general"
+        _chatSessionName.value = targetSession
+
         viewModelScope.launch {
             _isResponseLoading.value = true
             // Save search history
             repository.insertSearchQuery(query)
             // Save user message to database
-            repository.addChatMessage(_chatSessionName.value, isUser = true, text = query)
-            
+            repository.addChatMessage(targetSession, isUser = true, text = query)
+
             // Execute RAG Search
-            val response = repository.executeRagQuery(query, isThinkingMode)
+            val response = repository.executeRagQuery(query, isThinkingMode, domain)
             _lastRagResponse.value = response
-            
+
             // Save AI message to database
-            repository.addChatMessage(_chatSessionName.value, isUser = false, text = response.summary, ragResponse = response)
+            repository.addChatMessage(targetSession, isUser = false, text = response.summary, ragResponse = response)
             _isResponseLoading.value = false
         }
+    }
+
+    // --- Switch the active chat session (e.g. "general" civic chat vs "legal" rights consultation) ---
+    fun setChatSession(sessionName: String) {
+        _chatSessionName.value = sessionName
     }
 
     fun clearChat() {

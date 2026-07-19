@@ -58,6 +58,11 @@ fun AiAssistantScreen(
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
 
+    // Ensure the general civic session is active (e.g. if the user was previously in the Legal AI consult tab)
+    LaunchedEffect(Unit) {
+        viewModel.setChatSession("general")
+    }
+
     // Scroll to latest message on update
     LaunchedEffect(chatMessages.size) {
         if (chatMessages.isNotEmpty()) {

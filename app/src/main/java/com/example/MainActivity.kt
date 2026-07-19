@@ -61,7 +61,8 @@ class MainActivity : ComponentActivity() {
                                 onNavigateToResearch = { navController.navigate("research") },
                                 onNavigateToBookmarks = { navController.navigate("bookmarks") },
                                 onNavigateToSettings = { navController.navigate("settings") },
-                                onNavigateToSentiment = { navController.navigate("sentiment_chart") }
+                                onNavigateToSentiment = { navController.navigate("sentiment_chart") },
+                                onNavigateToLegal = { navController.navigate("legal_rights") }
                             )
                         }
 
@@ -131,6 +132,13 @@ class MainActivity : ComponentActivity() {
 
                         composable("sentiment_chart") {
                             SentimentChartScreen(
+                                viewModel = viewModel,
+                                onNavigateBack = { navController.popBackStack() }
+                            )
+                        }
+
+                        composable("legal_rights") {
+                            LegalRightsScreen(
                                 viewModel = viewModel,
                                 onNavigateBack = { navController.popBackStack() }
                             )
