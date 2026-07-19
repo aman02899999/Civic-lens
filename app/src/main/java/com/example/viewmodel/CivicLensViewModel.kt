@@ -101,12 +101,15 @@ class CivicLensViewModel(
     private val _lastRagResponse = MutableStateFlow<RagResponse?>(null)
     val lastRagResponse: StateFlow<RagResponse?> = _lastRagResponse.asStateFlow()
 
+    // Persisted user preferences (theme template, language) so they survive app restarts
+    private val preferences = application.getSharedPreferences("civic_lens_prefs", android.content.Context.MODE_PRIVATE)
+
     // Multi-Language State (Default English)
-    private val _currentLanguage = MutableStateFlow("English")
+    private val _currentLanguage = MutableStateFlow(preferences.getString(PREF_KEY_LANGUAGE, "English") ?: "English")
     val currentLanguage: StateFlow<String> = _currentLanguage.asStateFlow()
 
     // Active UI Styling Template State
-    private val _currentTemplate = MutableStateFlow("Classic Glassmorphism")
+    private val _currentTemplate = MutableStateFlow(preferences.getString(PREF_KEY_TEMPLATE, "Classic Glassmorphism") ?: "Classic Glassmorphism")
     val currentTemplate: StateFlow<String> = _currentTemplate.asStateFlow()
 
     // Voice Recording State
@@ -130,10 +133,12 @@ class CivicLensViewModel(
 
     fun setLanguage(lang: String) {
         _currentLanguage.value = lang
+        preferences.edit().putString(PREF_KEY_LANGUAGE, lang).apply()
     }
 
     fun setTemplate(template: String) {
         _currentTemplate.value = template
+        preferences.edit().putString(PREF_KEY_TEMPLATE, template).apply()
     }
 
     fun updateSearchQuery(query: String) {
@@ -387,5 +392,10 @@ class CivicLensViewModel(
                 _isLiveNewsLoading.value = false
             }
         }
+    }
+
+    companion object {
+        private const val PREF_KEY_LANGUAGE = "current_language"
+        private const val PREF_KEY_TEMPLATE = "current_template"
     }
 }

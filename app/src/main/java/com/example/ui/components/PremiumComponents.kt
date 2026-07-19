@@ -21,6 +21,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -44,12 +45,19 @@ fun GlassCard(
     borderWidth: Dp = 1.dp,
     content: @Composable ColumnScope.() -> Unit
 ) {
+    val elevatedModifier = modifier.shadow(
+        elevation = 6.dp,
+        shape = shape,
+        ambientColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+        spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)
+    )
+
     val cardModifier = if (onClick != null) {
-        modifier
+        elevatedModifier
             .clip(shape)
             .clickable(onClick = onClick)
     } else {
-        modifier.clip(shape)
+        elevatedModifier.clip(shape)
     }
 
     Box(
