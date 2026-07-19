@@ -41,8 +41,8 @@ object LegalKnowledgeBase {
 
     const val constitutionCategoryAll = "All"
     val constitutionCategories = listOf(
-        "All", "Preamble", "Citizenship", "Fundamental Rights", "Fundamental Duties", "DPSP",
-        "Property Rights", "Emergency Provisions", "Amendment Procedure"
+        "All", "Preamble", "Union & Territory", "Citizenship", "Fundamental Rights", "Fundamental Duties",
+        "DPSP", "Property Rights", "Federalism", "Emergency Provisions", "Amendment Procedure"
     )
 
     val constitutionArticles: List<ConstitutionArticle> = listOf(
@@ -51,6 +51,24 @@ object LegalKnowledgeBase {
             "We, the People of India",
             "Declares India a Sovereign, Socialist, Secular, Democratic Republic securing to all citizens Justice (social, economic, political), Liberty (of thought, expression, belief, faith, worship), Equality (of status and opportunity), and promoting Fraternity assuring dignity of the individual and unity and integrity of the Nation.",
             "Preamble"
+        ),
+        ConstitutionArticle(
+            "Article 1",
+            "Name and Territory of the Union",
+            "'India, that is Bharat, shall be a Union of States.' Declares India a Union (not a mere federation formed by agreement among states, which therefore cannot secede) comprising the States and Union Territories listed in the First Schedule, along with any territory that may be acquired.",
+            "Union & Territory"
+        ),
+        ConstitutionArticle(
+            "Article 12",
+            "Definition of 'the State'",
+            "For the purposes of Part III (Fundamental Rights), 'the State' includes the Government and Parliament of India, the Government and Legislature of each State, and all local or other authorities within India or under the control of the Government of India — determining who Fundamental Rights can be enforced against.",
+            "Fundamental Rights"
+        ),
+        ConstitutionArticle(
+            "Article 13",
+            "Laws Inconsistent with Fundamental Rights",
+            "Any law in force immediately before the commencement of the Constitution that is inconsistent with Part III is void to the extent of that inconsistency, and the State shall not make any law that takes away or abridges the Fundamental Rights — such a law is void to that extent.",
+            "Fundamental Rights"
         ),
         ConstitutionArticle(
             "Article 5-8",
@@ -227,6 +245,18 @@ object LegalKnowledgeBase {
             "Property Rights"
         ),
         ConstitutionArticle(
+            "Article 31A / 31B / 31C",
+            "Savings for Land Reform & Ninth Schedule Laws",
+            "Article 31A shields land-reform and agrarian laws from challenge under Articles 14 and 19. Article 31B protects laws placed in the Ninth Schedule from being struck down for violating Fundamental Rights. Article 31C protects laws genuinely enacted to implement certain Directive Principles (Article 39(b)/(c)) from such challenge. The Supreme Court in I. R. Coelho v. State of Tamil Nadu (2007) held that Ninth Schedule laws enacted after 24 April 1973 (the date of the Kesavananda Bharati judgment) remain subject to judicial review if they damage the Constitution's basic structure.",
+            "Property Rights"
+        ),
+        ConstitutionArticle(
+            "Article 370 (Historical)",
+            "Special Status of Jammu & Kashmir",
+            "Originally granted Jammu & Kashmir a special autonomous status, limiting Parliament's legislative power over the state to defence, foreign affairs, and communications unless the State concurred. On 5 August 2019, a Presidential Order (with Parliament acting in place of the State Legislature) effectively revoked Article 370's special provisions, and the Jammu and Kashmir Reorganisation Act, 2019 split the state into two Union Territories — Jammu & Kashmir and Ladakh. The Supreme Court upheld the constitutional validity of this abrogation in In Re: Article 370 of the Constitution (December 2023).",
+            "Federalism"
+        ),
+        ConstitutionArticle(
             "Article 352",
             "National Emergency",
             "The President may proclaim a National Emergency if satisfied that the security of India or any part of it is threatened by war, external aggression, or armed rebellion. The proclamation must be approved by both Houses of Parliament within one month (by special majority) to continue, and is subject to review every 6 months. During a National Emergency, Article 19 freedoms may be suspended if the emergency is due to war or external aggression, and the enforcement of other Fundamental Rights (except Articles 20 and 21) can be suspended. Invoked in 1962 (China war), 1971 (Pakistan war), and 1975 (internal disturbance — the 'Emergency').",
@@ -268,10 +298,14 @@ object LegalKnowledgeBase {
         LawSection("304", "105", "Culpable Homicide Not Amounting to Murder", "Causing death without the specific intent or knowledge required for murder.", "Life imprisonment or up to 10 years, plus fine", "Offences Against the Body"),
         LawSection("304A", "106", "Death by Negligence", "Causing death by a rash or negligent act not amounting to culpable homicide (e.g., negligent driving).", "Up to 5 years, plus fine (up to 10 years for hit-and-run cases with fleeing)", "Offences Against the Body"),
         LawSection("307", "109", "Attempt to Murder", "Doing an act with the intention or knowledge that, if it caused death, would amount to murder.", "Up to 10 years to life imprisonment, plus fine", "Offences Against the Body"),
+        LawSection("306", "108", "Abetment of Suicide", "Instigating, engaging in a conspiracy with, or intentionally aiding a person's act of suicide.", "Up to 10 years, plus fine", "Offences Against the Body"),
+        LawSection("309", "226", "Attempt to Suicide", "Attempting to commit suicide is decriminalized for ordinary cases under the Mental Healthcare Act, 2017 and the BNS; BNS Section 226 retains a narrower offence for attempting suicide specifically to compel or restrain a public servant from lawfully discharging their duty.", "Up to 1 year, or fine, or both (only in the narrow public-servant-coercion scenario)", "Offences Against the Body"),
         LawSection("323 / 324", "115", "Voluntarily Causing Hurt", "Intentionally causing bodily pain, disease, or infirmity to another person.", "Up to 1-3 years or fine, depending on severity and weapon used", "Offences Against the Body"),
         LawSection("354", "74", "Assault on a Woman to Outrage Her Modesty", "Assault or criminal force against a woman intending to, or knowing it is likely to, outrage her modesty.", "1 to 5 years, plus fine", "Sexual & Gender Offences"),
         LawSection("354A", "75", "Sexual Harassment", "Unwelcome physical contact, demand for sexual favours, showing pornography, or sexually coloured remarks.", "Up to 3 years, plus fine", "Sexual & Gender Offences"),
         LawSection("354D", "78", "Stalking", "Following or contacting a woman despite her disinterest, or monitoring her use of the internet/email/electronic communication.", "Up to 3 years (first offence), up to 5 years for repeat offence", "Sexual & Gender Offences"),
+        LawSection("354C", "77", "Voyeurism", "Watching or capturing the image of a woman engaging in a private act where she would usually expect not to be observed, or disseminating such an image.", "1 to 3 years (first offence), 3 to 7 years for repeat offence, plus fine", "Sexual & Gender Offences"),
+        LawSection("326A / 326B", "124(1) / 124(2)", "Acid Attack", "Voluntarily causing grievous hurt by throwing or administering acid, or the attempt to do so, with intent to cause (or knowledge that it is likely to cause) such injury.", "Minimum 10 years, up to life imprisonment, plus fine to be paid to the victim", "Sexual & Gender Offences"),
         LawSection("375 / 376", "63 / 64", "Rape", "Non-consensual sexual intercourse as defined under the section, including specific aggravated circumstances.", "Rigorous imprisonment of 10 years to life, plus fine", "Sexual & Gender Offences"),
         LawSection("376D", "70", "Gang Rape", "Rape committed by one or more persons acting in furtherance of common intention.", "20 years to life imprisonment, plus fine to the victim", "Sexual & Gender Offences"),
         LawSection("498A", "85 / 86", "Cruelty by Husband or Relatives", "Subjecting a married woman to cruelty — wilful conduct likely to drive her to suicide/grave injury, or harassment linked to dowry demands.", "Up to 3 years, plus fine", "Marriage & Family"),
@@ -296,6 +330,9 @@ object LegalKnowledgeBase {
         LawSection("272 / 273", "274 / 275", "Adulteration & Sale of Noxious Food or Drink", "Adulterating food or drink so as to make it noxious, or selling food/drink known to be noxious, intended for sale as food/drink for human consumption.", "Up to 6 months, plus fine", "Public Health & Safety"),
         LawSection("284 / 285 / 286", "287 / 288 / 289", "Negligent Conduct with Hazardous Substances", "Negligent handling of poisonous substances, fire/combustible material, or explosive substances so as to endanger human life or cause hurt.", "Up to 6 months, or fine, or both, depending on the substance and risk involved", "Public Health & Safety"),
         LawSection("141 / 144 (unlawful assembly, CrPC prohibitory order)", "189 (BNS) / 163 (BNSS)", "Unlawful Assembly & Prohibitory Orders", "Five or more persons assembled with a common unlawful object; and the procedural power of a magistrate to prohibit assembly/movement to prevent public disturbance.", "Up to 6 months to 2 years depending on the object of assembly", "Public Order & State"),
+        LawSection("146 / 147", "191", "Rioting", "The use of force or violence by an unlawful assembly, or any member of it, in prosecution of the assembly's common object.", "Up to 2-3 years, or fine, or both, with enhanced punishment for rioting with a deadly weapon", "Public Order & State"),
+        LawSection("121", "147", "Waging War Against the Government of India", "Waging war, attempting to wage war, or abetting the waging of war against the Government of India.", "Death penalty or life imprisonment, plus fine", "Public Order & State"),
+        LawSection("489A", "178", "Counterfeiting Currency Notes or Bank Notes", "Making, using, or possessing a counterfeit currency note or bank note, knowing or having reason to believe it is counterfeit.", "Life imprisonment or up to 10 years, plus fine", "Cyber & Documents"),
         LawSection("124A", "152", "Acts Endangering Sovereignty, Unity, and Integrity of India", "The colonial-era offence of 'Sedition' (IPC 124A) was repealed. BNS Section 152 now criminalizes acts of secession, armed rebellion, subversive activities, or exciting separatist feelings that endanger India's sovereignty or unity.", "Life imprisonment or up to 7 years, plus fine", "Public Order & State"),
         LawSection("34", "3(5)", "Common Intention", "Acts done by several persons in furtherance of a common intention make each person liable as if the act was done by them alone.", "Same liability as the principal offence committed", "Public Order & State"),
         LawSection("120B", "61", "Criminal Conspiracy", "Agreement between two or more persons to commit an illegal act, or a legal act by illegal means.", "Punishment same as abetment of the offence conspired, or up to 6 months for minor conspiracies", "Public Order & State")
@@ -454,6 +491,44 @@ object LegalKnowledgeBase {
                 "Increased penalties under the 2019 Amendment for offences like driving without a licence, dangerous driving, and not wearing a helmet/seatbelt are matched by corresponding victim-side protections and insurance obligations."
             ),
             "Consumer & Commerce"
+        ),
+        RightsTopic(
+            "Prisoners' Rights",
+            "A person does not lose all Fundamental Rights upon imprisonment — the Supreme Court has repeatedly held that prisoners retain rights under Articles 21 and 14, subject only to the restrictions necessary for incarceration.",
+            listOf(
+                "Right against solitary confinement, bar fetters, or handcuffing as a matter of routine — permissible only in exceptional, justified circumstances (Sunil Batra v. Delhi Administration, 1978).",
+                "Right to free legal aid and to consult a lawyer, including for filing appeals and bail applications.",
+                "Right to adequate medical care and healthcare in custody, and to be produced before a magistrate for any custodial injury.",
+                "Right against custodial violence and torture — any custodial death or injury must be independently investigated, per the D. K. Basu guidelines.",
+                "Right to periodic parole/furlough and remission consideration as per the applicable Prison Manual and State remission policy.",
+                "Undertrials are entitled to release on bail if they have served up to half the maximum sentence for the alleged offence, under the 'undertrial release' provisions of the BNSS."
+            ),
+            "Criminal Justice"
+        ),
+        RightsTopic(
+            "Right to a Fair and Speedy Trial",
+            "Article 21 has been interpreted to guarantee not just a trial, but a fair, speedy, and public trial — a right first firmly established in Hussainara Khatoon v. State of Bihar (1979), which exposed the plight of undertrials held longer than their maximum possible sentence.",
+            listOf(
+                "Right to a speedy trial without unreasonable or prolonged delay at any stage — investigation, inquiry, trial, or appeal.",
+                "Presumption of innocence until proven guilty, with the burden of proof resting on the prosecution.",
+                "Right against self-incrimination under Article 20(3) — an accused cannot be compelled to be a witness against themselves.",
+                "Right to be defended by a lawyer of one's choice, or to free legal aid if unable to afford one.",
+                "Right to cross-examine prosecution witnesses and to lead defence evidence.",
+                "Right to a copy of the police report/chargesheet and all documents relied upon by the prosecution, before trial."
+            ),
+            "Criminal Justice"
+        ),
+        RightsTopic(
+            "Environmental & Pollution Complaint Rights",
+            "The right to a clean and healthy environment has been read into Article 21 by the Supreme Court, and is backed by a dedicated environmental tribunal system and pollution control regulators.",
+            listOf(
+                "Right to file a complaint directly with the National Green Tribunal (NGT) for violations of environmental laws, without needing to first exhaust other remedies, and without the strict limitation periods of ordinary civil courts.",
+                "Right to lodge grievances with the Central Pollution Control Board (CPCB) or the relevant State Pollution Control Board (SPCB) regarding air, water, or noise pollution by industries or construction activity.",
+                "Right to seek compensation for environmental damage and personal injury caused by hazardous industries, grounded in the 'Absolute Liability' principle from M. C. Mehta v. Union of India (the Oleum Gas Leak Case, 1987).",
+                "Right to access environmental clearance and Environmental Impact Assessment (EIA) documents for major projects, and to participate in public hearings before clearance is granted.",
+                "Right to report illegal construction, unauthorized tree felling, or wildlife/forest violations to local authorities and forest departments."
+            ),
+            "Environment & Public Health"
         )
     )
 
@@ -482,6 +557,13 @@ object LegalKnowledgeBase {
             "1973",
             "Parliament's power to amend the Constitution under Article 368 is not unlimited — it cannot alter the Constitution's 'Basic Structure'.",
             "Established the Basic Structure Doctrine, the single most important check on Parliament's amending power; features like judicial review, federalism, secularism, and free elections cannot be abrogated even by constitutional amendment.",
+            "Basic Structure"
+        ),
+        LandmarkCase(
+            "Indira Nehru Gandhi v. Raj Narain",
+            "1975",
+            "Struck down clause (4) of Article 329A — inserted by the 39th Amendment to place the Prime Minister's election beyond the scrutiny of any court — as violating the basic structure of the Constitution.",
+            "The first case in which the Supreme Court actually used the Basic Structure Doctrine (established two years earlier in Kesavananda Bharati) to strike down a constitutional amendment, confirming that free and fair elections and the rule of law are part of the basic structure.",
             "Basic Structure"
         ),
         LandmarkCase(
@@ -588,6 +670,27 @@ object LegalKnowledgeBase {
             "Struck down Section 8(4) of the Representation of the People Act, 1951, which had allowed a sitting MP or MLA convicted of a crime to continue in office pending appeal — holding that disqualification takes effect immediately upon conviction, just as it does for a non-sitting candidate.",
             "Significantly strengthened electoral accountability by closing a loophole that let convicted legislators retain their seats during lengthy appeals, directly reinforcing the constitutional goal of keeping tainted representatives out of the legislature.",
             "Electoral Integrity"
+        ),
+        LandmarkCase(
+            "M. Nagaraj v. Union of India",
+            "2006",
+            "Upheld the constitutional validity of reservation in promotions for SC/ST employees (Articles 16(4A) and 16(4B)), but held it is not automatic — the State must first demonstrate backwardness, inadequate representation, and that overall administrative efficiency is not compromised.",
+            "Established the enduring 'Nagaraj conditions' that govern promotion quotas, requiring quantifiable data before such reservations can be validly extended, and remains central to ongoing litigation over reservation in government promotions.",
+            "Equality & Reservation"
+        ),
+        LandmarkCase(
+            "Aruna Ramchandra Shanbaug v. Union of India",
+            "2011",
+            "First recognized that passive euthanasia could be permissible in India under strict judicial safeguards, even though the Court declined to withdraw life support from Aruna Shanbaug herself, finding she was not brain-dead and her caregivers wished to continue her care.",
+            "Laid the initial groundwork — later built upon and formalized into a full 'living will' framework by Common Cause v. Union of India (2018) — for recognizing a limited right to die with dignity under Article 21.",
+            "Personal Liberty"
+        ),
+        LandmarkCase(
+            "Naz Foundation v. NCT of Delhi & Suresh Kumar Koushal v. Naz Foundation",
+            "2009 & 2013",
+            "The Delhi High Court first read down Section 377 of the erstwhile IPC in 2009 to decriminalize consensual same-sex conduct between adults; the Supreme Court reversed this in 2013, holding that only Parliament could amend the provision — before Section 377 was finally read down again, permanently, in Navtej Singh Johar v. Union of India (2018).",
+            "Illustrates how constitutional rights can expand, contract, and expand again as different benches revisit the same question — the full arc from Naz Foundation through Suresh Kumar Koushal to Navtej Singh Johar is a landmark case study in LGBTQ+ rights litigation in India.",
+            "Fundamental Rights"
         )
     )
 }
