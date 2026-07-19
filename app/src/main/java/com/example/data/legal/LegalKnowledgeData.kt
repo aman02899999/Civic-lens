@@ -254,7 +254,8 @@ object LegalKnowledgeBase {
 
     val criminalLawCategories = listOf(
         "All", "Offences Against the Body", "Sexual & Gender Offences", "Property Offences",
-        "Public Order & State", "Marriage & Family", "Cyber & Documents", "Labour & Employment Offences"
+        "Public Order & State", "Marriage & Family", "Cyber & Documents", "Labour & Employment Offences",
+        "Public Health & Safety"
     )
 
     /**
@@ -290,6 +291,10 @@ object LegalKnowledgeBase {
         LawSection("370 / 370A", "143 / 144", "Trafficking of Persons & Exploitation of a Trafficked Person", "Recruiting, transporting, harbouring, or receiving a person by force, fraud, or coercion for exploitation — including forced labour, bonded labour, and physical exploitation; Section 370A separately punishes knowingly engaging a trafficked person for labour or sexual exploitation.", "7 years to life imprisonment, plus fine, depending on the victim's age and severity of exploitation", "Labour & Employment Offences"),
         LawSection("499 / 500", "356", "Defamation", "Making or publishing an imputation concerning a person intending to harm, or with reason to believe it will harm, their reputation.", "Up to 2 years, or fine, or both (simple imprisonment)", "Cyber & Documents"),
         LawSection("463 / 465", "336 / 338", "Forgery", "Making a false document or electronic record with intent to cause damage, support a claim, or commit fraud.", "Up to 2-7 years depending on the document type, plus fine", "Cyber & Documents"),
+        LawSection("468", "338", "Forgery for the Purpose of Cheating", "Committing forgery with the intent that the forged document or electronic record be used to commit cheating.", "Up to 7 years, plus fine", "Cyber & Documents"),
+        LawSection("471", "340(2)", "Using a Forged Document as Genuine", "Fraudulently or dishonestly using a document or electronic record as genuine, knowing or having reason to believe it is a forged document.", "Same punishment as for forgery of that document", "Cyber & Documents"),
+        LawSection("272 / 273", "274 / 275", "Adulteration & Sale of Noxious Food or Drink", "Adulterating food or drink so as to make it noxious, or selling food/drink known to be noxious, intended for sale as food/drink for human consumption.", "Up to 6 months, plus fine", "Public Health & Safety"),
+        LawSection("284 / 285 / 286", "287 / 288 / 289", "Negligent Conduct with Hazardous Substances", "Negligent handling of poisonous substances, fire/combustible material, or explosive substances so as to endanger human life or cause hurt.", "Up to 6 months, or fine, or both, depending on the substance and risk involved", "Public Health & Safety"),
         LawSection("141 / 144 (unlawful assembly, CrPC prohibitory order)", "189 (BNS) / 163 (BNSS)", "Unlawful Assembly & Prohibitory Orders", "Five or more persons assembled with a common unlawful object; and the procedural power of a magistrate to prohibit assembly/movement to prevent public disturbance.", "Up to 6 months to 2 years depending on the object of assembly", "Public Order & State"),
         LawSection("124A", "152", "Acts Endangering Sovereignty, Unity, and Integrity of India", "The colonial-era offence of 'Sedition' (IPC 124A) was repealed. BNS Section 152 now criminalizes acts of secession, armed rebellion, subversive activities, or exciting separatist feelings that endanger India's sovereignty or unity.", "Life imprisonment or up to 7 years, plus fine", "Public Order & State"),
         LawSection("34", "3(5)", "Common Intention", "Acts done by several persons in furtherance of a common intention make each person liable as if the act was done by them alone.", "Same liability as the principal offence committed", "Public Order & State"),
@@ -413,12 +418,48 @@ object LegalKnowledgeBase {
                 "Public Interest Litigation (PIL) allows any public-spirited citizen to approach the Court on behalf of those unable to do so themselves."
             ),
             "Criminal Justice"
+        ),
+        RightsTopic(
+            "Tenant & Landlord Rights",
+            "Rental housing in India is governed by state-level Rent Control Acts and, increasingly, the Model Tenancy Act, 2021 framework adopted (with variations) by several states to balance tenant protections with landlord interests.",
+            listOf(
+                "Right to a written rent agreement clearly stating rent, security deposit, duration, and maintenance responsibilities.",
+                "Security deposits are typically capped (e.g., 2 months' rent for residential property under the Model Tenancy Act) and must be refunded at the end of tenancy, net of lawful deductions.",
+                "Right to essential services (water, electricity) — a landlord cannot unilaterally cut these off to force eviction; doing so may attract both civil and criminal liability (e.g., criminal intimidation, mischief).",
+                "Eviction must generally follow due process through a Rent Court/Rent Authority or civil court — 'self-help' eviction without legal process is not permitted.",
+                "Right to receive a rent receipt for payments made, and to dispute unlawful or excessive rent increases before the relevant Rent Authority."
+            ),
+            "Consumer & Commerce"
+        ),
+        RightsTopic(
+            "Banking, Loan & Financial Rights",
+            "Bank customers and borrowers in India are protected by RBI regulations, the Banking Ombudsman Scheme (now under the integrated RBI Ombudsman framework), and lender fair-practice codes.",
+            listOf(
+                "Right to have unauthorized/fraudulent digital transactions reversed if reported promptly — RBI's 'limited liability' circular caps a customer's liability when reported within 3 working days.",
+                "Right to a Fair Practices Code from lenders — clear disclosure of interest rates, fees, and recovery practices before and during a loan.",
+                "Loan recovery agents cannot use threats, intimidation, or harass borrowers/their families — such conduct can be reported to the RBI Ombudsman and may separately constitute criminal intimidation or extortion.",
+                "Right to a copy of loan documents, and to receive original property documents back promptly after full loan repayment.",
+                "Right to escalate unresolved bank/NBFC complaints to the RBI Integrated Ombudsman Scheme, 2021, free of cost, via the CMS portal (cms.rbi.org.in)."
+            ),
+            "Consumer & Commerce"
+        ),
+        RightsTopic(
+            "Motorist & Road Accident Rights",
+            "The Motor Vehicles (Amendment) Act, 2019 strengthened road-safety obligations and introduced important protections for accident victims and Good Samaritans.",
+            listOf(
+                "'Good Samaritan' protection — a person who helps an accident victim in good faith (e.g., taking them to a hospital) cannot be forced to reveal their identity, held liable for the victim's condition, or subjected to unnecessary police/hospital procedural harassment.",
+                "Right to cashless treatment for road accident victims during the 'golden hour' under the notified cashless treatment scheme, regardless of fault or insurance status.",
+                "Right to compensation via a Motor Accident Claims Tribunal (MACT), including interim relief, even while the claim is being adjudicated.",
+                "Right to challenge a traffic e-challan and to be shown the specific violation with supporting evidence (e.g., camera footage) before penalty enforcement.",
+                "Increased penalties under the 2019 Amendment for offences like driving without a licence, dangerous driving, and not wearing a helmet/seatbelt are matched by corresponding victim-side protections and insurance obligations."
+            ),
+            "Consumer & Commerce"
         )
     )
 
     val landmarkCaseCategories = listOf(
         "All", "Fundamental Rights", "Basic Structure", "Personal Liberty", "Equality & Reservation",
-        "Federalism", "Environmental Law", "Digital Rights"
+        "Federalism", "Environmental Law", "Digital Rights", "Electoral Integrity"
     )
 
     val landmarkCases: List<LandmarkCase> = listOf(
@@ -533,6 +574,20 @@ object LegalKnowledgeBase {
             "Recognized the right to die with dignity as part of the right to life under Article 21, legalizing passive euthanasia and permitting individuals to execute a 'living will' specifying that they not be put on life support in a terminal, vegetative state.",
             "Extended the scope of Article 21 into end-of-life autonomy, laying down detailed guidelines and safeguards for passive euthanasia to be followed by patients, families, and medical boards.",
             "Personal Liberty"
+        ),
+        LandmarkCase(
+            "Mohd. Ahmed Khan v. Shah Bano Begum",
+            "1985",
+            "Held that a divorced Muslim woman unable to maintain herself is entitled to maintenance from her former husband under Section 125 of the Criminal Procedure Code, a secular provision applicable regardless of religion.",
+            "One of India's most debated judgments on the intersection of personal law and secular criminal law; the political backlash led Parliament to enact the Muslim Women (Protection of Rights on Divorce) Act, 1986, though later judicial interpretation has largely preserved a divorced woman's right to fair maintenance.",
+            "Fundamental Rights"
+        ),
+        LandmarkCase(
+            "Lily Thomas v. Union of India",
+            "2013",
+            "Struck down Section 8(4) of the Representation of the People Act, 1951, which had allowed a sitting MP or MLA convicted of a crime to continue in office pending appeal — holding that disqualification takes effect immediately upon conviction, just as it does for a non-sitting candidate.",
+            "Significantly strengthened electoral accountability by closing a loophole that let convicted legislators retain their seats during lengthy appeals, directly reinforcing the constitutional goal of keeping tainted representatives out of the legislature.",
+            "Electoral Integrity"
         )
     )
 }
