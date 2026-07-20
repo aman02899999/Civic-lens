@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Storage
@@ -201,7 +202,7 @@ fun SettingsScreen(
                             ) {
                                 Text(lang, fontSize = 14.sp)
                                 if (currentLanguage == lang.substringBefore(" ")) {
-                                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Selected", tint = MaterialTheme.colorScheme.primary)
+                                    Icon(Icons.Default.Check, contentDescription = "Selected", tint = MaterialTheme.colorScheme.primary)
                                 }
                             }
                         }

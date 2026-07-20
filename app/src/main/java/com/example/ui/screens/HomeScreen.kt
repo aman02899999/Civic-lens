@@ -86,12 +86,37 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Column {
-                    Text(
-                        text = "CivicLens AI",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = "CivicLens AI",
+                            style = MaterialTheme.typography.headlineMedium,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(
+                                    Brush.horizontalGradient(
+                                        colors = listOf(
+                                            com.example.ui.theme.PremiumAccentGold,
+                                            com.example.ui.theme.PremiumAccentGold.copy(alpha = 0.7f)
+                                        )
+                                    )
+                                )
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                                .testTag("premium_badge")
+                        ) {
+                            Text(
+                                text = "PREMIUM",
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                letterSpacing = 0.5.sp,
+                                color = Color(0xFF3D2E00)
+                            )
+                        }
+                    }
                     Text(
                         text = "Verified Election Intelligence",
                         style = MaterialTheme.typography.bodySmall,

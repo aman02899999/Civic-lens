@@ -32,6 +32,7 @@ fun ConstituencyScreen(
     onNavigateToAssistant: () -> Unit
 ) {
     val constituencies by viewModel.constituencies.collectAsState()
+    val isSeeding by viewModel.isSeeding.collectAsState()
     var searchInput by remember { mutableStateOf("") }
     var selectedConstituency by remember { mutableStateOf<DbConstituency?>(null) }
 
@@ -160,6 +161,7 @@ fun ConstituencyScreen(
                     item {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(16.dp),
                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f))
                         ) {
                             Row(
@@ -248,6 +250,25 @@ fun ConstituencyScreen(
                             Text("Analyze Local Budget & Debates with AI", fontWeight = FontWeight.Bold)
                         }
                     }
+                } else {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 48.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (isSeeding) {
+                                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                            } else {
+                                Text(
+                                    text = "No constituency data available.",
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    fontSize = 14.sp
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -262,6 +283,7 @@ fun RepresentativeCard(
 ) {
     Card(
         modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         border = CardDefaults.outlinedCardBorder()
     ) {
@@ -282,6 +304,7 @@ fun SocialStatCard(
 ) {
     Card(
         modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Row(
