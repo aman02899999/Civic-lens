@@ -367,8 +367,7 @@ class CivicLensRepository(private val dao: CivicLensDao) {
      */
     suspend fun executeRagQuery(
         query: String,
-        isThinkingMode: Boolean = false,
-        domain: String = "civic"
+        isThinkingMode: Boolean = false
     ): RagResponse = withContext(Dispatchers.IO) {
         // 1. Gather context from local database where query keywords match
         val parties = allParties.first()
@@ -378,74 +377,47 @@ class CivicLensRepository(private val dao: CivicLensDao) {
 
         val matchingContext = StringBuilder()
         matchingContext.append("Local Verified Database Records:\n")
-
-        if (domain != "legal") {
-            parties.forEach { p ->
-                if (query.contains(p.id, ignoreCase = true) || query.contains(p.name.substringBefore("(").trim(), ignoreCase = true)) {
-                    matchingContext.append("- Party: ${p.name}, President: ${p.president}, Founded: ${p.founded}, Vote History: ${p.voteShareHistory}, Achievements: ${p.achievements.joinToString()}\n")
-                }
+        
+        parties.forEach { p ->
+            if (query.contains(p.id, ignoreCase = true) || query.contains(p.name.substringBefore("(").trim(), ignoreCase = true)) {
+                matchingContext.append("- Party: ${p.name}, President: ${p.president}, Founded: ${p.founded}, Vote History: ${p.voteShareHistory}, Achievements: ${p.achievements.joinToString()}\n")
             }
-            candidates.forEach { c ->
-                if (query.contains(c.name, ignoreCase = true) || query.contains(c.id, ignoreCase = true)) {
-                    matchingContext.append("- Candidate: ${c.name}, Party: ${c.partyName}, Education: ${c.education}, Profession: ${c.profession}, Assets: ${c.assets}, Liabilities: ${c.liabilities}, Attendance: ${c.attendance}, Crim Cases: ${c.declaredCriminalCases}\n")
-                }
+        }
+        candidates.forEach { c ->
+            if (query.contains(c.name, ignoreCase = true) || query.contains(c.id, ignoreCase = true)) {
+                matchingContext.append("- Candidate: ${c.name}, Party: ${c.partyName}, Education: ${c.education}, Profession: ${c.profession}, Assets: ${c.assets}, Liabilities: ${c.liabilities}, Attendance: ${c.attendance}, Crim Cases: ${c.declaredCriminalCases}\n")
             }
-            schemes.forEach { s ->
-                if (query.contains(s.name, ignoreCase = true) || query.contains(s.id, ignoreCase = true) || query.contains("scheme", ignoreCase = true)) {
-                    matchingContext.append("- Scheme: ${s.name}, Description: ${s.description}, Benefits: ${s.benefits}, Eligibility: ${s.eligibility}, Ministry: ${s.ministry}, Source: ${s.sourceUrl}\n")
-                }
+        }
+        schemes.forEach { s ->
+            if (query.contains(s.name, ignoreCase = true) || query.contains(s.id, ignoreCase = true) || query.contains("scheme", ignoreCase = true)) {
+                matchingContext.append("- Scheme: ${s.name}, Description: ${s.description}, Benefits: ${s.benefits}, Eligibility: ${s.eligibility}, Ministry: ${s.ministry}, Source: ${s.sourceUrl}\n")
             }
-            constituencies.forEach { con ->
-                if (query.contains(con.name, ignoreCase = true) || query.contains(con.id, ignoreCase = true) || query.contains("constituency", ignoreCase = true)) {
-                    matchingContext.append("- Constituency: ${con.name}, State: ${con.state}, MP: ${con.mpName}, Budget: ${con.budgetAllocation}, Roads: ${con.roadsProgress}, Water: ${con.waterProgress}, Elec: ${con.electricityProgress}\n")
-                }
+        }
+        constituencies.forEach { con ->
+            if (query.contains(con.name, ignoreCase = true) || query.contains(con.id, ignoreCase = true) || query.contains("constituency", ignoreCase = true)) {
+                matchingContext.append("- Constituency: ${con.name}, State: ${con.state}, MP: ${con.mpName}, Budget: ${con.budgetAllocation}, Roads: ${con.roadsProgress}, Water: ${con.waterProgress}, Elec: ${con.electricityProgress}\n")
             }
         }
 
         // 2. Setup the prompt and system instructions keeping neutrality
-        val systemInstructionText = if (domain == "legal") {
-            """
-                You are CivicLens Legal AI, an Indian legal information and rights-awareness assistant.
-                Your purpose is to help ordinary Indian citizens understand the Constitution of India, the
-                Bharatiya Nyaya Sanhita (BNS) 2023 (which replaced the Indian Penal Code, IPC 1860, effective 1 July 2024),
-                the Bharatiya Nagarik Suraksha Sanhita (BNSS, replacing the CrPC), the Bharatiya Sakshya Adhiniyam (replacing
-                the Evidence Act), and their fundamental legal rights.
-                You MUST:
-                - Cite the specific Constitutional Article, BNS/BNSS/BSA section, or relevant Act by name wherever applicable.
-                - Where an old IPC/CrPC section is commonly known, mention both the old section and its current BNS/BNSS equivalent if you know it, and note that numbering should be verified against the official Bare Act.
-                - Be neutral, factual, and educational. Never provide advice on how to break the law or evade legal consequences.
-                - Always include a clear closing disclaimer that this is general legal information, not a substitute for advice from a licensed advocate, and that the user should consult a qualified lawyer or their nearest Legal Services Authority (NALSA/SLSA/DLSA, helpline 15100) for case-specific guidance.
-                - Use real-time Google Search grounding to verify current legal provisions, recent amendments, or judgments when relevant.
-                Format your output using clean markdown with clear sections.
-            """.trimIndent()
-        } else {
-            """
-                You are CivicLens AI, a neutral civic information platform for India.
-                You must NEVER promote or oppose any political party, candidate, ideology, or government.
-                You must be strictly objective, factual, balanced, and unbiased.
-                Your task is to provide verified information from authoritative sources.
-                Do not invent political opinions, do not share speculation, and do not make subjective claims.
-                If there is no verified public information from official government portals or ECI, state so.
-                Use the provided Local Verified Database Records AND your real-time Google Search grounding capabilities to supply correct, up-to-date details.
-                Format your output using clean markdown with clear sections.
-            """.trimIndent()
-        }
+        val systemInstructionText = """
+            You are CivicLens AI, a neutral civic information platform for India.
+            You must NEVER promote or oppose any political party, candidate, ideology, or government.
+            You must be strictly objective, factual, balanced, and unbiased.
+            Your task is to provide verified information from authoritative sources.
+            Do not invent political opinions, do not share speculation, and do not make subjective claims.
+            If there is no verified public information from official government portals or ECI, state so.
+            Use the provided Local Verified Database Records AND your real-time Google Search grounding capabilities to supply correct, up-to-date details.
+            Format your output using clean markdown with clear sections.
+        """.trimIndent()
 
-        val promptText = if (domain == "legal") {
-            """
-                User Legal Query: $query
-
-                Please provide a clear, well-organized explanation citing the relevant Constitutional Articles and/or BNS/BNSS/BSA sections, followed by practical next steps the person can take, and end with the standard legal-aid disclaimer.
-            """.trimIndent()
-        } else {
-            """
-                $matchingContext
-
-                User Query: $query
-
-                Please provide a factual summary with confidence score, source count, and verified official government links.
-            """.trimIndent()
-        }
+        val promptText = """
+            $matchingContext
+            
+            User Query: $query
+            
+            Please provide a factual summary with confidence score, source count, and verified official government links.
+        """.trimIndent()
 
         val apiKey = BuildConfig.GEMINI_API_KEY
         val model = if (isThinkingMode) "gemini-3.1-pro-preview" else "gemini-3.5-flash"
@@ -508,11 +480,7 @@ class CivicLensRepository(private val dao: CivicLensDao) {
                 confidenceScore = rawScore,
                 sourceCount = sourceCount,
                 lastUpdated = lastUpdatedStr,
-                officialSources = if (uniqueSources.isNotEmpty()) uniqueSources else if (domain == "legal") {
-                    listOf("India Code (Official Statutes): https://www.indiacode.nic.in", "National Legal Services Authority (NALSA): https://nalsa.gov.in")
-                } else {
-                    listOf("Election Commission of India: https://eci.gov.in", "Official Gov Portal: https://india.gov.in")
-                }
+                officialSources = if (uniqueSources.isNotEmpty()) uniqueSources else listOf("Election Commission of India: https://eci.gov.in", "Official Gov Portal: https://india.gov.in")
             )
         } catch (e: Exception) {
             // Fallback response from local context if API fails or offline

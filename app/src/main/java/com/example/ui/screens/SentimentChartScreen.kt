@@ -64,7 +64,6 @@ fun SentimentChartScreen(
     onNavigateBack: () -> Unit
 ) {
     val context = LocalContext.current
-    val bookmarks by viewModel.bookmarks.collectAsState()
     var selectedTab by remember { mutableStateOf(0) } // 0 = Speech Discourse, 1 = Win Projections
     var selectedCandidateId by remember { mutableStateOf("all") } // "all", "narendra_modi", "rahul_gandhi", "arvind_kejriwal"
 
@@ -172,14 +171,6 @@ fun SentimentChartScreen(
     }
 
     var selectedStatement by remember { mutableStateOf(statements.first()) }
-
-    // Reset the selected statement if it gets filtered out by a candidate filter change,
-    // so the breakdown card never shows a statement that isn't in the current filtered set.
-    LaunchedEffect(filteredStatements) {
-        if (filteredStatements.isNotEmpty() && filteredStatements.none { it.id == selectedStatement.id }) {
-            selectedStatement = filteredStatements.first()
-        }
-    }
 
     Scaffold(
         topBar = {
@@ -445,7 +436,7 @@ fun SentimentChartScreen(
                     enter = fadeIn() + expandVertically(),
                     exit = fadeOut() + shrinkVertically()
                 ) {
-                    val isBookmarked = bookmarks.any { it.id == "sentiment_${selectedStatement.id}" }
+                    val isBookmarked = false // Simulated state for now
                     Column(
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -659,15 +650,15 @@ fun SentimentChartScreen(
                                                 title = "Discourse Audit: ${selectedStatement.candidateName}",
                                                 type = "sentiment",
                                                 itemId = selectedStatement.id,
-                                                currentlyBookmarked = isBookmarked
+                                                currentlyBookmarked = false
                                             )
                                         },
                                         modifier = Modifier.testTag("bookmark_discourse_button")
                                     ) {
                                         Icon(
-                                            imageVector = if (isBookmarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
+                                            imageVector = Icons.Default.BookmarkBorder,
                                             contentDescription = "Bookmark speech analysis",
-                                            tint = if (isBookmarked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     }
                                 }

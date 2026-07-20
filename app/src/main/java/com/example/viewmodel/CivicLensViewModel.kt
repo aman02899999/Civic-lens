@@ -71,18 +71,6 @@ class CivicLensViewModel(
         _preselectedParties.value = null
     }
 
-    // Pre-selected tab for the "Know Your Rights" legal panel (used when opening from a bookmark)
-    private val _preselectedLegalTab = MutableStateFlow<Int?>(null)
-    val preselectedLegalTab: StateFlow<Int?> = _preselectedLegalTab.asStateFlow()
-
-    fun setPreselectedLegalTab(tabIndex: Int) {
-        _preselectedLegalTab.value = tabIndex
-    }
-
-    fun clearPreselectedLegalTab() {
-        _preselectedLegalTab.value = null
-    }
-
     val searchHistory: StateFlow<List<DbSearchHistory>> = repository.searchHistory
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
@@ -101,15 +89,12 @@ class CivicLensViewModel(
     private val _lastRagResponse = MutableStateFlow<RagResponse?>(null)
     val lastRagResponse: StateFlow<RagResponse?> = _lastRagResponse.asStateFlow()
 
-    // Persisted user preferences (theme template, language) so they survive app restarts
-    private val preferences = application.getSharedPreferences("civic_lens_prefs", android.content.Context.MODE_PRIVATE)
-
     // Multi-Language State (Default English)
-    private val _currentLanguage = MutableStateFlow(preferences.getString(PREF_KEY_LANGUAGE, "English") ?: "English")
+    private val _currentLanguage = MutableStateFlow("English")
     val currentLanguage: StateFlow<String> = _currentLanguage.asStateFlow()
 
     // Active UI Styling Template State
-    private val _currentTemplate = MutableStateFlow(preferences.getString(PREF_KEY_TEMPLATE, "Classic Glassmorphism") ?: "Classic Glassmorphism")
+    private val _currentTemplate = MutableStateFlow("Classic Glassmorphism")
     val currentTemplate: StateFlow<String> = _currentTemplate.asStateFlow()
 
     // Voice Recording State
@@ -133,12 +118,10 @@ class CivicLensViewModel(
 
     fun setLanguage(lang: String) {
         _currentLanguage.value = lang
-        preferences.edit().putString(PREF_KEY_LANGUAGE, lang).apply()
     }
 
     fun setTemplate(template: String) {
         _currentTemplate.value = template
-        preferences.edit().putString(PREF_KEY_TEMPLATE, template).apply()
     }
 
     fun updateSearchQuery(query: String) {
@@ -162,35 +145,24 @@ class CivicLensViewModel(
     }
 
     // --- AI Assistant RAG Query ---
-    fun askAssistant(query: String, isThinkingMode: Boolean = false, domain: String = "civic") {
+    fun askAssistant(query: String, isThinkingMode: Boolean = false) {
         if (query.isBlank()) return
-
-        // Authoritatively route to the correct session for this domain, regardless of whatever
-        // session was last active (e.g. a prior visit to the Legal AI consult tab), so messages
-        // never get misfiled into the wrong chat history.
-        val targetSession = if (domain == "legal") "legal" else "general"
-        _chatSessionName.value = targetSession
-
+        
         viewModelScope.launch {
             _isResponseLoading.value = true
             // Save search history
             repository.insertSearchQuery(query)
             // Save user message to database
-            repository.addChatMessage(targetSession, isUser = true, text = query)
-
+            repository.addChatMessage(_chatSessionName.value, isUser = true, text = query)
+            
             // Execute RAG Search
-            val response = repository.executeRagQuery(query, isThinkingMode, domain)
+            val response = repository.executeRagQuery(query, isThinkingMode)
             _lastRagResponse.value = response
-
+            
             // Save AI message to database
-            repository.addChatMessage(targetSession, isUser = false, text = response.summary, ragResponse = response)
+            repository.addChatMessage(_chatSessionName.value, isUser = false, text = response.summary, ragResponse = response)
             _isResponseLoading.value = false
         }
-    }
-
-    // --- Switch the active chat session (e.g. "general" civic chat vs "legal" rights consultation) ---
-    fun setChatSession(sessionName: String) {
-        _chatSessionName.value = sessionName
     }
 
     fun clearChat() {
@@ -392,10 +364,5 @@ class CivicLensViewModel(
                 _isLiveNewsLoading.value = false
             }
         }
-    }
-
-    companion object {
-        private const val PREF_KEY_LANGUAGE = "current_language"
-        private const val PREF_KEY_TEMPLATE = "current_template"
     }
 }

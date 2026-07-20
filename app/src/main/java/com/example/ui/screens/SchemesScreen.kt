@@ -18,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -37,7 +38,6 @@ fun SchemesScreen(
 ) {
     val schemes by viewModel.schemes.collectAsState()
     val bookmarks by viewModel.bookmarks.collectAsState()
-    val isSeeding by viewModel.isSeeding.collectAsState()
 
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("All") }
@@ -105,16 +105,7 @@ fun SchemesScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             // Schemes List
-            if (isSeeding && schemes.isEmpty()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(24.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                }
-            } else if (filteredSchemes.isEmpty()) {
+            if (filteredSchemes.isEmpty()) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -220,13 +211,13 @@ fun SchemeCard(
                 .padding(10.dp)
         ) {
             Row(verticalAlignment = Alignment.Top) {
-                Icon(Icons.Default.Verified, contentDescription = null, modifier = Modifier.size(12.dp), tint = MaterialTheme.colorScheme.tertiary)
+                Icon(Icons.Default.Verified, contentDescription = null, modifier = Modifier.size(12.dp), tint = Color(0xFF2E7D32))
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = "Eligibility: ${scheme.eligibility}",
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = Color(0xFF2E7D32)
                 )
             }
             Spacer(modifier = Modifier.height(6.dp))

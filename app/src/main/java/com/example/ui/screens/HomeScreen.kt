@@ -53,8 +53,7 @@ fun HomeScreen(
     onNavigateToResearch: () -> Unit,
     onNavigateToBookmarks: () -> Unit,
     onNavigateToSettings: () -> Unit,
-    onNavigateToSentiment: () -> Unit,
-    onNavigateToLegal: () -> Unit
+    onNavigateToSentiment: () -> Unit
 ) {
     val news by viewModel.news.collectAsState()
     val searchHistory by viewModel.searchHistory.collectAsState()
@@ -86,37 +85,12 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Column {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = "CivicLens AI",
-                            style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(6.dp))
-                                .background(
-                                    Brush.horizontalGradient(
-                                        colors = listOf(
-                                            com.example.ui.theme.PremiumAccentGold,
-                                            com.example.ui.theme.PremiumAccentGold.copy(alpha = 0.7f)
-                                        )
-                                    )
-                                )
-                                .padding(horizontal = 6.dp, vertical = 2.dp)
-                                .testTag("premium_badge")
-                        ) {
-                            Text(
-                                text = "PREMIUM",
-                                fontSize = 9.sp,
-                                fontWeight = FontWeight.ExtraBold,
-                                letterSpacing = 0.5.sp,
-                                color = Color(0xFF3D2E00)
-                            )
-                        }
-                    }
+                    Text(
+                        text = "CivicLens AI",
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
                     Text(
                         text = "Verified Election Intelligence",
                         style = MaterialTheme.typography.bodySmall,
@@ -377,16 +351,8 @@ fun HomeScreen(
                                     subtitle = "Compare Candidate Veracity",
                                     icon = Icons.AutoMirrored.Filled.TrendingUp,
                                     color = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.weight(1f).testTag("nav_sentiment_feature"),
+                                    modifier = Modifier.fillMaxWidth().testTag("nav_sentiment_feature"),
                                     onClick = onNavigateToSentiment
-                                )
-                                FeatureButton(
-                                    title = "Know Your Rights",
-                                    subtitle = "Constitution, IPC/BNS & Legal Aid",
-                                    icon = Icons.Default.VerifiedUser,
-                                    color = MaterialTheme.colorScheme.secondary,
-                                    modifier = Modifier.weight(1f).testTag("nav_legal_feature"),
-                                    onClick = onNavigateToLegal
                                 )
                             }
                         }
@@ -765,19 +731,9 @@ fun HomeScreen(
                                     icon = Icons.AutoMirrored.Filled.TrendingUp,
                                     color = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier
-                                        .weight(1f)
+                                        .fillMaxWidth()
                                         .testTag("nav_sentiment_feature"),
                                     onClick = onNavigateToSentiment
-                                )
-                                FeatureButton(
-                                    title = "Know Your Rights",
-                                    subtitle = "Constitution, IPC/BNS & Legal Aid",
-                                    icon = Icons.Default.VerifiedUser,
-                                    color = MaterialTheme.colorScheme.secondary,
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .testTag("nav_legal_feature"),
-                                    onClick = onNavigateToLegal
                                 )
                             }
                         }
