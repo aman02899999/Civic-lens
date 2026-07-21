@@ -1,5 +1,8 @@
 package com.example.ui.screens
 
+import com.example.R
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -274,12 +277,20 @@ fun SettingsScreen(
 
             // 4. Platform Identity Detail
             item {
-                Box(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 12.dp),
-                    contentAlignment = Alignment.Center
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_app_logo),
+                        contentDescription = "CivicLens AI Logo",
+                        modifier = Modifier
+                            .size(54.dp)
+                            .clip(RoundedCornerShape(14.dp))
+                    )
                     Text(
                         text = "CivicLens AI v1.0.0 (Production Build)\nVerified, Objective, Balanced.",
                         fontSize = 11.sp,
