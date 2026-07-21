@@ -18,7 +18,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -27,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.local.DbGovernmentScheme
 import com.example.ui.components.GlassCard
+import com.example.ui.components.ShimmerListCard
 import com.example.viewmodel.CivicLensViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,6 +38,7 @@ fun SchemesScreen(
 ) {
     val schemes by viewModel.schemes.collectAsState()
     val bookmarks by viewModel.bookmarks.collectAsState()
+    val isSeeding by viewModel.isSeeding.collectAsState()
 
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("All") }
@@ -105,7 +106,24 @@ fun SchemesScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             // Schemes List
-            if (filteredSchemes.isEmpty()) {
+            if (isSeeding && schemes.isEmpty()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    repeat(4) {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+                        ) {
+                            ShimmerListCard()
+                        }
+                    }
+                }
+            } else if (filteredSchemes.isEmpty()) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -211,13 +229,13 @@ fun SchemeCard(
                 .padding(10.dp)
         ) {
             Row(verticalAlignment = Alignment.Top) {
-                Icon(Icons.Default.Verified, contentDescription = null, modifier = Modifier.size(12.dp), tint = Color(0xFF2E7D32))
+                Icon(Icons.Default.Verified, contentDescription = null, modifier = Modifier.size(12.dp), tint = MaterialTheme.colorScheme.tertiary)
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = "Eligibility: ${scheme.eligibility}",
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Medium,
-                    color = Color(0xFF2E7D32)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
             Spacer(modifier = Modifier.height(6.dp))
