@@ -4,6 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -48,7 +53,23 @@ class MainActivity : ComponentActivity() {
 
                     NavHost(
                         navController = navController,
-                        startDestination = "home"
+                        startDestination = "home",
+                        enterTransition = {
+                            fadeIn(animationSpec = tween(220)) +
+                                slideInHorizontally(animationSpec = tween(220)) { it / 6 }
+                        },
+                        exitTransition = {
+                            fadeOut(animationSpec = tween(180)) +
+                                slideOutHorizontally(animationSpec = tween(180)) { -it / 6 }
+                        },
+                        popEnterTransition = {
+                            fadeIn(animationSpec = tween(220)) +
+                                slideInHorizontally(animationSpec = tween(220)) { -it / 6 }
+                        },
+                        popExitTransition = {
+                            fadeOut(animationSpec = tween(180)) +
+                                slideOutHorizontally(animationSpec = tween(180)) { it / 6 }
+                        }
                     ) {
                         composable("home") {
                             HomeScreen(
@@ -61,7 +82,8 @@ class MainActivity : ComponentActivity() {
                                 onNavigateToResearch = { navController.navigate("research") },
                                 onNavigateToBookmarks = { navController.navigate("bookmarks") },
                                 onNavigateToSettings = { navController.navigate("settings") },
-                                onNavigateToSentiment = { navController.navigate("sentiment_chart") }
+                                onNavigateToSentiment = { navController.navigate("sentiment_chart") },
+                                onNavigateToLegal = { navController.navigate("legal_rights") }
                             )
                         }
 
@@ -111,7 +133,8 @@ class MainActivity : ComponentActivity() {
                                 onNavigateToSchemes = { navController.navigate("schemes") },
                                 onNavigateToNews = { navController.navigate("news") },
                                 onNavigateToCompare = { navController.navigate("compare") },
-                                onNavigateToAssistant = { navController.navigate("assistant") }
+                                onNavigateToAssistant = { navController.navigate("assistant") },
+                                onNavigateToLegal = { navController.navigate("legal_rights") }
                             )
                         }
 
@@ -131,6 +154,13 @@ class MainActivity : ComponentActivity() {
 
                         composable("sentiment_chart") {
                             SentimentChartScreen(
+                                viewModel = viewModel,
+                                onNavigateBack = { navController.popBackStack() }
+                            )
+                        }
+
+                        composable("legal_rights") {
+                            LegalRightsScreen(
                                 viewModel = viewModel,
                                 onNavigateBack = { navController.popBackStack() }
                             )

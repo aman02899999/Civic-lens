@@ -1,7 +1,6 @@
 package com.example.ui.screens
 
 import com.example.R
-
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -37,10 +36,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.data.local.DbVerifiedNews
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.ui.graphics.graphicsLayer
 import com.example.ui.components.FactCredibilityTagSet
 import com.example.ui.components.GlassCard
 import com.example.ui.components.PoliticalSearchInput
+import com.example.ui.components.PulsingDot
 import com.example.ui.components.SeatsChart
+import com.example.ui.components.ShimmerListCard
+import com.example.ui.components.animatePressScale
 import com.example.viewmodel.CivicLensViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,7 +60,8 @@ fun HomeScreen(
     onNavigateToResearch: () -> Unit,
     onNavigateToBookmarks: () -> Unit,
     onNavigateToSettings: () -> Unit,
-    onNavigateToSentiment: () -> Unit
+    onNavigateToSentiment: () -> Unit,
+    onNavigateToLegal: () -> Unit
 ) {
     val news by viewModel.news.collectAsState()
     val searchHistory by viewModel.searchHistory.collectAsState()
@@ -98,12 +104,37 @@ fun HomeScreen(
                             .clip(RoundedCornerShape(12.dp))
                     )
                     Column {
-                        Text(
-                            text = "CivicLens AI",
-                            style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = "CivicLens AI",
+                                style = MaterialTheme.typography.headlineMedium,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(
+                                        Brush.horizontalGradient(
+                                            colors = listOf(
+                                                com.example.ui.theme.PremiumAccentGold,
+                                                com.example.ui.theme.PremiumAccentGold.copy(alpha = 0.7f)
+                                            )
+                                        )
+                                    )
+                                    .padding(horizontal = 6.dp, vertical = 2.dp)
+                                    .testTag("premium_badge")
+                            ) {
+                                Text(
+                                    text = "PREMIUM",
+                                    fontSize = 9.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    letterSpacing = 0.5.sp,
+                                    color = Color(0xFF3D2E00)
+                                )
+                            }
+                        }
                         Text(
                             text = "Verified Election Intelligence",
                             style = MaterialTheme.typography.bodySmall,
@@ -255,12 +286,7 @@ fun HomeScreen(
                                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Box(
-                                            modifier = Modifier
-                                                .size(6.dp)
-                                                .clip(CircleShape)
-                                                .background(Color.White)
-                                        )
+                                        PulsingDot(color = Color.White)
                                         Spacer(modifier = Modifier.width(4.dp))
                                         Text("LIVE TRACKER", fontSize = 10.sp, fontWeight = FontWeight.Bold)
                                     }
@@ -365,8 +391,16 @@ fun HomeScreen(
                                     subtitle = "Compare Candidate Veracity",
                                     icon = Icons.AutoMirrored.Filled.TrendingUp,
                                     color = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.fillMaxWidth().testTag("nav_sentiment_feature"),
+                                    modifier = Modifier.weight(1f).testTag("nav_sentiment_feature"),
                                     onClick = onNavigateToSentiment
+                                )
+                                FeatureButton(
+                                    title = "Know Your Rights",
+                                    subtitle = "Constitution, IPC/BNS & Legal Aid",
+                                    icon = Icons.Default.VerifiedUser,
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    modifier = Modifier.weight(1f).testTag("nav_legal_feature"),
+                                    onClick = onNavigateToLegal
                                 )
                             }
                         }
@@ -394,15 +428,12 @@ fun HomeScreen(
                         }
 
                         if (news.isEmpty()) {
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-                            ) {
-                                Box(
-                                    modifier = Modifier.fillMaxWidth().padding(24.dp),
-                                    contentAlignment = Alignment.Center
+                            repeat(3) {
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
                                 ) {
-                                    CircularProgressIndicator()
+                                    ShimmerListCard()
                                 }
                             }
                         } else {
@@ -625,12 +656,7 @@ fun HomeScreen(
                                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Box(
-                                            modifier = Modifier
-                                                .size(6.dp)
-                                                .clip(CircleShape)
-                                                .background(Color.White)
-                                        )
+                                        PulsingDot(color = Color.White)
                                         Spacer(modifier = Modifier.width(4.dp))
                                         Text("LIVE TRACKER", fontSize = 10.sp, fontWeight = FontWeight.Bold)
                                     }
@@ -745,9 +771,19 @@ fun HomeScreen(
                                     icon = Icons.AutoMirrored.Filled.TrendingUp,
                                     color = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier
-                                        .fillMaxWidth()
+                                        .weight(1f)
                                         .testTag("nav_sentiment_feature"),
                                     onClick = onNavigateToSentiment
+                                )
+                                FeatureButton(
+                                    title = "Know Your Rights",
+                                    subtitle = "Constitution, IPC/BNS & Legal Aid",
+                                    icon = Icons.Default.VerifiedUser,
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .testTag("nav_legal_feature"),
+                                    onClick = onNavigateToLegal
                                 )
                             }
                         }
@@ -783,21 +819,14 @@ fun HomeScreen(
                     }
 
                     if (news.isEmpty()) {
-                        item {
+                        items(3) {
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 16.dp),
-                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                                    .padding(horizontal = 16.dp, vertical = 6.dp),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
                             ) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(24.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    CircularProgressIndicator()
-                                }
+                                ShimmerListCard()
                             }
                         }
                     } else {
@@ -915,13 +944,23 @@ fun FeatureButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val pressScale = animatePressScale(isPressed)
+
     ElevatedCard(
         onClick = onClick,
-        modifier = modifier.height(100.dp),
+        modifier = modifier
+            .height(100.dp)
+            .graphicsLayer {
+                scaleX = pressScale
+                scaleY = pressScale
+            },
         colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(16.dp),
+        interactionSource = interactionSource
     ) {
         Row(
             modifier = Modifier
