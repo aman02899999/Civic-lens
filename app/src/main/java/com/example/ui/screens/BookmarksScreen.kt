@@ -27,6 +27,7 @@ private const val BOOKMARK_CATEGORY_ALL = "All"
 /** Groups the raw bookmark `type` values into a friendly, user-facing category for filtering. */
 private fun bookmarkCategory(type: String): String = when (type) {
     "legal_article", "legal_law_section", "legal_rights_topic", "legal_case", "LegalChat" -> "Legal & Rights"
+    "voter_topic" -> "Voter Toolkit"
     "compare_candidates", "compare_parties" -> "Comparisons"
     "scheme" -> "Schemes"
     "news" -> "News & Fact-Checks"
@@ -41,6 +42,7 @@ private fun bookmarkTypeLabel(type: String): String = when (type) {
     "legal_law_section" -> "IPC / BNS Section"
     "legal_rights_topic" -> "Know Your Rights"
     "legal_case" -> "Landmark Case"
+    "voter_topic" -> "Voter Guide"
     "LegalChat" -> "Legal AI Chat"
     "Chat" -> "AI Assistant Chat"
     "compare_candidates" -> "Candidate Comparison"
@@ -60,7 +62,8 @@ fun BookmarksScreen(
     onNavigateToNews: () -> Unit,
     onNavigateToCompare: () -> Unit,
     onNavigateToAssistant: () -> Unit,
-    onNavigateToLegal: () -> Unit
+    onNavigateToLegal: () -> Unit,
+    onNavigateToVoterToolkit: () -> Unit
 ) {
     val bookmarks by viewModel.bookmarks.collectAsState()
     var selectedCategory by remember { mutableStateOf(BOOKMARK_CATEGORY_ALL) }
@@ -209,6 +212,7 @@ fun BookmarksScreen(
                                         viewModel.setPreselectedLegalTab(LEGAL_TAB_LANDMARK_CASES)
                                         onNavigateToLegal()
                                     }
+                                    "voter_topic" -> onNavigateToVoterToolkit()
                                     else -> onNavigateToSchemes()
                                 }
                             },

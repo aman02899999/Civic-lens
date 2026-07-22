@@ -61,7 +61,8 @@ fun HomeScreen(
     onNavigateToBookmarks: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onNavigateToSentiment: () -> Unit,
-    onNavigateToLegal: () -> Unit
+    onNavigateToLegal: () -> Unit,
+    onNavigateToVoterToolkit: () -> Unit
 ) {
     val news by viewModel.news.collectAsState()
     val searchHistory by viewModel.searchHistory.collectAsState()
@@ -399,6 +400,16 @@ fun HomeScreen(
                                     color = MaterialTheme.colorScheme.secondary,
                                     modifier = Modifier.weight(1f).testTag("nav_legal_feature"),
                                     onClick = onNavigateToLegal
+                                )
+                            }
+                            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                FeatureButton(
+                                    title = "Voter Toolkit",
+                                    subtitle = "Registration, EVM Guide & Helplines",
+                                    icon = Icons.Default.HowToVote,
+                                    color = MaterialTheme.colorScheme.tertiary,
+                                    modifier = Modifier.fillMaxWidth().testTag("nav_voter_feature"),
+                                    onClick = onNavigateToVoterToolkit
                                 )
                             }
                         }
@@ -782,6 +793,18 @@ fun HomeScreen(
                                         .weight(1f)
                                         .testTag("nav_legal_feature"),
                                     onClick = onNavigateToLegal
+                                )
+                            }
+                            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                FeatureButton(
+                                    title = "Voter Toolkit",
+                                    subtitle = "Registration, EVM Guide & Helplines",
+                                    icon = Icons.Default.HowToVote,
+                                    color = MaterialTheme.colorScheme.tertiary,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .testTag("nav_voter_feature"),
+                                    onClick = onNavigateToVoterToolkit
                                 )
                             }
                         }
