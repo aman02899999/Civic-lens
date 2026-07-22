@@ -83,7 +83,8 @@ class MainActivity : ComponentActivity() {
                                 onNavigateToBookmarks = { navController.navigate("bookmarks") },
                                 onNavigateToSettings = { navController.navigate("settings") },
                                 onNavigateToSentiment = { navController.navigate("sentiment_chart") },
-                                onNavigateToLegal = { navController.navigate("legal_rights") }
+                                onNavigateToLegal = { navController.navigate("legal_rights") },
+                                onNavigateToVoterToolkit = { navController.navigate("voter_toolkit") }
                             )
                         }
 
@@ -134,7 +135,8 @@ class MainActivity : ComponentActivity() {
                                 onNavigateToNews = { navController.navigate("news") },
                                 onNavigateToCompare = { navController.navigate("compare") },
                                 onNavigateToAssistant = { navController.navigate("assistant") },
-                                onNavigateToLegal = { navController.navigate("legal_rights") }
+                                onNavigateToLegal = { navController.navigate("legal_rights") },
+                                onNavigateToVoterToolkit = { navController.navigate("voter_toolkit") }
                             )
                         }
 
@@ -161,6 +163,13 @@ class MainActivity : ComponentActivity() {
 
                         composable("legal_rights") {
                             LegalRightsScreen(
+                                viewModel = viewModel,
+                                onNavigateBack = { navController.popBackStack() }
+                            )
+                        }
+
+                        composable("voter_toolkit") {
+                            VoterToolkitScreen(
                                 viewModel = viewModel,
                                 onNavigateBack = { navController.popBackStack() }
                             )
