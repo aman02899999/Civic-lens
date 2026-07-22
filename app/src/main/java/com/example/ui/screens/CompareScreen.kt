@@ -263,8 +263,6 @@ fun CompareScreen(
                                                         "• Declared Assets: ${candidate1!!.assets} vs ${candidate2!!.assets}\n" +
                                                         "• Criminal Cases: ${candidate1!!.declaredCriminalCases} vs ${candidate2!!.declaredCriminalCases}\n" +
                                                         "• MP Attendance: ${candidate1!!.attendance} vs ${candidate2!!.attendance}\n\n" +
-                                                        "🔗 VIEW LIVE DEEP COMPARISON:\n" +
-                                                        "https://ais-pre-wijwveclzob5y5omrdcdec-257369852531.asia-southeast1.run.app/compare?type=candidate&id1=${candidate1!!.id}&id2=${candidate2!!.id}\n\n" +
                                                         "⚖️ Non-partisan, ECI-grounded verified metrics. Empowering civic awareness."
                                                 val intent = Intent(Intent.ACTION_SEND).apply {
                                                     type = "text/plain"
@@ -462,8 +460,6 @@ fun CompareScreen(
                                                         "• Founded: ${party1!!.founded} vs ${party2!!.founded}\n" +
                                                         "• Seats History: ${party1!!.seatsHistory} vs ${party2!!.seatsHistory}\n" +
                                                         "• Vote Share: ${party1!!.voteShareHistory} vs ${party2!!.voteShareHistory}\n\n" +
-                                                        "🔗 VIEW LIVE DEEP COMPARISON:\n" +
-                                                        "https://ais-pre-wijwveclzob5y5omrdcdec-257369852531.asia-southeast1.run.app/compare?type=party&id1=${party1!!.id}&id2=${party2!!.id}\n\n" +
                                                         "⚖️ Non-partisan, ECI-grounded verified metrics. Empowering civic awareness."
                                                 val intent = Intent(Intent.ACTION_SEND).apply {
                                                     type = "text/plain"

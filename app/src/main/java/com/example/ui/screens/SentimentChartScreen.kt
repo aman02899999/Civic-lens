@@ -1,7 +1,6 @@
 package com.example.ui.screens
 
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
@@ -615,8 +614,6 @@ fun SentimentChartScreen(
                                         onClick = {
                                             val hexHash = Integer.toHexString(selectedStatement.statement.hashCode()).uppercase().padStart(8, '0')
                                             val signature = "CL-SENT-${hexHash.take(4)}-${hexHash.drop(4)}-${selectedStatement.veracityScore.toInt()}"
-                                            val shareUrl = "https://ais-pre-wijwveclzob5y5omrdcdec-257369852531.asia-southeast1.run.app/sentiment?id=${selectedStatement.id}"
-                                            
                                             val shareText = "🔍 CIVICLENS SPEECH SENTIMENT REGISTRY\n" +
                                                     "=========================================\n" +
                                                     "⚖️ VERIFIED MULTI-AXIS DISCOURSE AUDIT\n" +
@@ -631,8 +628,6 @@ fun SentimentChartScreen(
                                                     "📊 EVIDENCE BRIEF:\n" +
                                                     "• Analysis: ${selectedStatement.verificationSummary}\n" +
                                                     "• Grounding Record: ${selectedStatement.verifiedData}\n\n" +
-                                                    "🔗 VERIFY DISCOURSE HISTORICALLY:\n" +
-                                                    "$shareUrl\n\n" +
                                                     "⚖️ Empowering electors with verified non-partisan non-ideological metadata."
 
                                             val intent = Intent(Intent.ACTION_SEND).apply {

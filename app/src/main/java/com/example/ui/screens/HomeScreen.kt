@@ -65,8 +65,6 @@ fun HomeScreen(
 ) {
     val news by viewModel.news.collectAsState()
     val searchHistory by viewModel.searchHistory.collectAsState()
-    var searchInput by remember { mutableStateOf("") }
-    var activeSearch by remember { mutableStateOf(false) }
 
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(

@@ -689,9 +689,6 @@ fun NewsDetailCard(
                             }
                             val hexHash = Integer.toHexString(article.title.hashCode()).uppercase().padStart(8, '0')
                             val signature = "CL-NEWS-${hexHash.take(4)}-${hexHash.drop(4)}-$confidencePct"
-                            val encodedTitle = Uri.encode(article.title)
-                            val shareUrl = "https://ais-pre-wijwveclzob5y5omrdcdec-257369852531.asia-southeast1.run.app/news?id=${article.id}"
-                            
                             val shareText = "🔍 CIVICLENS VERIFIED NEWS REGISTRY\n" +
                                     "===========================================\n" +
                                     "📰 OFFICIAL VERIFIED REPORT\n" +
@@ -703,8 +700,6 @@ fun NewsDetailCard(
                                     "Registry Signature: $signature\n\n" +
                                     "📋 SUMMARY:\n" +
                                     "\"${article.content}\"\n\n" +
-                                    "🔗 VERIFY ORIGINAL REPORT IN THE APP:\n" +
-                                    "$shareUrl\n\n" +
                                     "⚖️ Guarding democratic discourse with non-partisan, ECI-grounded verified evidence."
 
                             val intent = Intent(Intent.ACTION_SEND).apply {

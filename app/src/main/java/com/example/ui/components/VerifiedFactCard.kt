@@ -148,9 +148,6 @@ fun VerifiedFactCard(
                         onClick = {
                             val hexHash = Integer.toHexString(topicQuery.hashCode()).uppercase().padStart(8, '0')
                             val signature = "CL-REG-${hexHash.take(4)}-${hexHash.drop(4)}-$confidencePct"
-                            val encodedQuery = Uri.encode(topicQuery)
-                            val shareUrl = "https://ais-pre-wijwveclzob5y5omrdcdec-257369852531.asia-southeast1.run.app/factcheck?query=$encodedQuery"
-                            
                             val shareText = "🔍 CIVICLENS ELECTION VERIFICATION REGISTRY\n" +
                                     "===========================================\n" +
                                     "✅ VERIFIED OFFICIAL BRIEFING CARD\n" +
@@ -161,8 +158,6 @@ fun VerifiedFactCard(
                                     "Citations Count: ${response.sourceCount} Official Source(s)\n\n" +
                                     "📋 AI FACT SUMMARY:\n" +
                                     "\"${response.summary}\"\n\n" +
-                                    "🔗 VERIFY ORIGINAL SOURCE & PLATFORM APP:\n" +
-                                    "$shareUrl\n\n" +
                                     "⚖️ Guarding democratic discourse with non-partisan, ECI-grounded verified evidence."
 
                             val intent = Intent(Intent.ACTION_SEND).apply {
