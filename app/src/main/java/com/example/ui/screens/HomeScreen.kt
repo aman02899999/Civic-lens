@@ -350,8 +350,8 @@ fun HomeScreen(
                             }
                             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                 FeatureButton(
-                                    title = "Scheme Finder",
-                                    subtitle = "Factual Eligibility",
+                                    title = "Schemes & Jobs",
+                                    subtitle = "Benefits & Govt Job Portals",
                                     icon = Icons.Default.Gavel,
                                     color = MaterialTheme.colorScheme.tertiary,
                                     modifier = Modifier.weight(1f).testTag("nav_schemes_feature"),
@@ -731,8 +731,8 @@ fun HomeScreen(
                             }
                             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                 FeatureButton(
-                                    title = "Scheme Finder",
-                                    subtitle = "Factual Eligibility",
+                                    title = "Schemes & Jobs",
+                                    subtitle = "Benefits & Govt Job Portals",
                                     icon = Icons.Default.Gavel,
                                     color = MaterialTheme.colorScheme.tertiary,
                                     modifier = Modifier
