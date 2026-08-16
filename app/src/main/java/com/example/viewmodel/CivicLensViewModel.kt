@@ -21,6 +21,33 @@ class CivicLensViewModel(
     private val repository: CivicLensRepository
 ) : AndroidViewModel(application) {
 
+    // Network Connectivity State Tracker
+    private val networkObserver = com.example.data.remote.NetworkObserver(application)
+    val isOnline: StateFlow<Boolean> = networkObserver.isOnline
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            networkObserver.checkCurrentConnection()
+        )
+
+    fun retryConnection() {
+        val currentlyConnected = networkObserver.checkCurrentConnection()
+        if (currentlyConnected) {
+            _liveNewsError.value = null
+            _candidateSearchError.value = null
+            _verificationError.value = null
+            _govtJobRefreshStatus.value = "Network reconnected! Refreshing live feeds..."
+            refreshLiveNews()
+            refreshGovtJobsDaily()
+            if (_candidateSearchQuery.value.isNotBlank()) {
+                performCandidateSearch()
+            }
+        } else {
+            _govtJobRefreshStatus.value = "Network unavailable. Operating in local offline mode."
+            _liveNewsError.value = "Device is offline. Displaying cached local verified records."
+        }
+    }
+
     // Seeding and Initial Setup State
     private val _isSeeding = MutableStateFlow(true)
     val isSeeding: StateFlow<Boolean> = _isSeeding.asStateFlow()
@@ -48,6 +75,49 @@ class CivicLensViewModel(
     val bookmarks: StateFlow<List<DbBookmark>> = repository.allBookmarks
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    val govtJobs: StateFlow<List<DbGovtJob>> = repository.allGovtJobs
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    // Government Job Helper Specific States
+    private val _selectedGovtCategory = MutableStateFlow("All")
+    val selectedGovtCategory: StateFlow<String> = _selectedGovtCategory.asStateFlow()
+
+    private val _govtJobQuery = MutableStateFlow("")
+    val govtJobQuery: StateFlow<String> = _govtJobQuery.asStateFlow()
+
+    private val _isGovtJobRefreshing = MutableStateFlow(false)
+    val isGovtJobRefreshing: StateFlow<Boolean> = _isGovtJobRefreshing.asStateFlow()
+
+    private val _govtJobRefreshStatus = MutableStateFlow<String?>(null)
+    val govtJobRefreshStatus: StateFlow<String?> = _govtJobRefreshStatus.asStateFlow()
+
+    fun setGovtJobCategory(category: String) {
+        _selectedGovtCategory.value = category
+    }
+
+    fun updateGovtJobQuery(query: String) {
+        _govtJobQuery.value = query
+    }
+
+    fun refreshGovtJobsDaily() {
+        _isGovtJobRefreshing.value = true
+        _govtJobRefreshStatus.value = "Fetching live government portal updates..."
+        viewModelScope.launch {
+            try {
+                val updatedJobs = repository.fetchLiveGovtJobUpdates(_selectedGovtCategory.value)
+                _govtJobRefreshStatus.value = "Updated ${updatedJobs.size} active government job alerts!"
+            } catch (e: Exception) {
+                _govtJobRefreshStatus.value = "Refresh completed using cached official data."
+            } finally {
+                _isGovtJobRefreshing.value = false
+            }
+        }
+    }
+
+    fun clearGovtJobStatus() {
+        _govtJobRefreshStatus.value = null
+    }
+
     // Pre-selected comparison states for navigation from Bookmarks
     private val _preselectedCandidates = MutableStateFlow<Pair<String, String>?>(null)
     val preselectedCandidates: StateFlow<Pair<String, String>?> = _preselectedCandidates.asStateFlow()
@@ -71,18 +141,6 @@ class CivicLensViewModel(
         _preselectedParties.value = null
     }
 
-    // Pre-selected tab for the "Know Your Rights" legal panel (used when opening from a bookmark)
-    private val _preselectedLegalTab = MutableStateFlow<Int?>(null)
-    val preselectedLegalTab: StateFlow<Int?> = _preselectedLegalTab.asStateFlow()
-
-    fun setPreselectedLegalTab(tabIndex: Int) {
-        _preselectedLegalTab.value = tabIndex
-    }
-
-    fun clearPreselectedLegalTab() {
-        _preselectedLegalTab.value = null
-    }
-
     val searchHistory: StateFlow<List<DbSearchHistory>> = repository.searchHistory
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
@@ -101,16 +159,17 @@ class CivicLensViewModel(
     private val _lastRagResponse = MutableStateFlow<RagResponse?>(null)
     val lastRagResponse: StateFlow<RagResponse?> = _lastRagResponse.asStateFlow()
 
-    // Persisted user preferences (theme template, language) so they survive app restarts
-    private val preferences = application.getSharedPreferences("civic_lens_prefs", android.content.Context.MODE_PRIVATE)
-
     // Multi-Language State (Default English)
-    private val _currentLanguage = MutableStateFlow(preferences.getString(PREF_KEY_LANGUAGE, "English") ?: "English")
+    private val _currentLanguage = MutableStateFlow("English")
     val currentLanguage: StateFlow<String> = _currentLanguage.asStateFlow()
 
     // Active UI Styling Template State
-    private val _currentTemplate = MutableStateFlow(preferences.getString(PREF_KEY_TEMPLATE, "Classic Glassmorphism") ?: "Classic Glassmorphism")
+    private val _currentTemplate = MutableStateFlow("Classic Glassmorphism")
     val currentTemplate: StateFlow<String> = _currentTemplate.asStateFlow()
+
+    // Response Latency Mode: "LOW_LATENCY", "BALANCED", "DEEP_REASONING"
+    private val _responseLatencyMode = MutableStateFlow("LOW_LATENCY")
+    val responseLatencyMode: StateFlow<String> = _responseLatencyMode.asStateFlow()
 
     // Voice Recording State
     private val _isRecording = MutableStateFlow(false)
@@ -133,12 +192,14 @@ class CivicLensViewModel(
 
     fun setLanguage(lang: String) {
         _currentLanguage.value = lang
-        preferences.edit().putString(PREF_KEY_LANGUAGE, lang).apply()
     }
 
     fun setTemplate(template: String) {
         _currentTemplate.value = template
-        preferences.edit().putString(PREF_KEY_TEMPLATE, template).apply()
+    }
+
+    fun setResponseLatencyMode(mode: String) {
+        _responseLatencyMode.value = mode
     }
 
     fun updateSearchQuery(query: String) {
@@ -161,36 +222,27 @@ class CivicLensViewModel(
         }
     }
 
-    // --- AI Assistant RAG Query ---
-    fun askAssistant(query: String, isThinkingMode: Boolean = false, domain: String = "civic") {
+    // --- AI Assistant RAG Query with Low Latency Support ---
+    fun askAssistant(query: String, isThinkingMode: Boolean = false, mode: String? = null) {
         if (query.isBlank()) return
-
-        // Authoritatively route to the correct session for this domain, regardless of whatever
-        // session was last active (e.g. a prior visit to the Legal AI consult tab), so messages
-        // never get misfiled into the wrong chat history.
-        val targetSession = if (domain == "legal") "legal" else "general"
-        _chatSessionName.value = targetSession
-
+        
+        val activeMode = mode ?: if (isThinkingMode) "DEEP_REASONING" else _responseLatencyMode.value
+        
         viewModelScope.launch {
             _isResponseLoading.value = true
             // Save search history
             repository.insertSearchQuery(query)
             // Save user message to database
-            repository.addChatMessage(targetSession, isUser = true, text = query)
-
-            // Execute RAG Search
-            val response = repository.executeRagQuery(query, isThinkingMode, domain)
+            repository.addChatMessage(_chatSessionName.value, isUser = true, text = query)
+            
+            // Execute RAG Search with designated latency mode
+            val response = repository.executeRagQuery(query, isThinkingMode, responseMode = activeMode)
             _lastRagResponse.value = response
-
-            // Save AI message to database
-            repository.addChatMessage(targetSession, isUser = false, text = response.summary, ragResponse = response)
+            
+            // Save AI message to database with response latency metrics
+            repository.addChatMessage(_chatSessionName.value, isUser = false, text = response.summary, ragResponse = response)
             _isResponseLoading.value = false
         }
-    }
-
-    // --- Switch the active chat session (e.g. "general" civic chat vs "legal" rights consultation) ---
-    fun setChatSession(sessionName: String) {
-        _chatSessionName.value = sessionName
     }
 
     fun clearChat() {
@@ -394,8 +446,55 @@ class CivicLensViewModel(
         }
     }
 
-    companion object {
-        private const val PREF_KEY_LANGUAGE = "current_language"
-        private const val PREF_KEY_TEMPLATE = "current_template"
+    // --- Candidate Gemini AI Search States ---
+    private val _candidateSearchQuery = MutableStateFlow("")
+    val candidateSearchQuery: StateFlow<String> = _candidateSearchQuery.asStateFlow()
+
+    private val _candidateSearchFocus = MutableStateFlow("All")
+    val candidateSearchFocus: StateFlow<String> = _candidateSearchFocus.asStateFlow()
+
+    private val _candidateSearchResult = MutableStateFlow<com.example.data.remote.CandidateQueryResponse?>(null)
+    val candidateSearchResult: StateFlow<com.example.data.remote.CandidateQueryResponse?> = _candidateSearchResult.asStateFlow()
+
+    private val _isCandidateSearchLoading = MutableStateFlow(false)
+    val isCandidateSearchLoading: StateFlow<Boolean> = _isCandidateSearchLoading.asStateFlow()
+
+    private val _candidateSearchError = MutableStateFlow<String?>(null)
+    val candidateSearchError: StateFlow<String?> = _candidateSearchError.asStateFlow()
+
+    fun updateCandidateSearchQuery(query: String) {
+        _candidateSearchQuery.value = query
+    }
+
+    fun setCandidateSearchFocus(focus: String) {
+        _candidateSearchFocus.value = focus
+        if (_candidateSearchQuery.value.isNotBlank()) {
+            performCandidateSearch(_candidateSearchQuery.value, focus)
+        }
+    }
+
+    fun performCandidateSearch(query: String = _candidateSearchQuery.value, focus: String = _candidateSearchFocus.value) {
+        if (query.isBlank()) return
+        _candidateSearchQuery.value = query
+        _isCandidateSearchLoading.value = true
+        _candidateSearchError.value = null
+        
+        viewModelScope.launch {
+            try {
+                repository.insertSearchQuery(query)
+                val result = repository.searchCandidateIntelligence(query, focus)
+                _candidateSearchResult.value = result
+            } catch (e: Exception) {
+                _candidateSearchError.value = e.localizedMessage
+            } finally {
+                _isCandidateSearchLoading.value = false
+            }
+        }
+    }
+
+    fun clearCandidateSearch() {
+        _candidateSearchQuery.value = ""
+        _candidateSearchResult.value = null
+        _candidateSearchError.value = null
     }
 }

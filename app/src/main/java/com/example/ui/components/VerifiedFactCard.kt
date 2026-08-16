@@ -95,29 +95,59 @@ fun VerifiedFactCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Non-Partisan trust tag
+                // Non-Partisan trust tag & Latency Indicator
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(themeColor.copy(alpha = 0.08f))
-                        .border(1.dp, themeColor.copy(alpha = 0.15f), RoundedCornerShape(12.dp))
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Verified,
-                        contentDescription = "Shield Verified",
-                        tint = themeColor,
-                        modifier = Modifier.size(14.dp)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = "NEUTRAL VERIFICATION ENGINE",
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        letterSpacing = 0.5.sp,
-                        color = themeColor
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(themeColor.copy(alpha = 0.08f))
+                            .border(1.dp, themeColor.copy(alpha = 0.15f), RoundedCornerShape(12.dp))
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Verified,
+                            contentDescription = "Shield Verified",
+                            tint = themeColor,
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "NEUTRAL VERIFICATION ENGINE",
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            letterSpacing = 0.5.sp,
+                            color = themeColor
+                        )
+                    }
+
+                    if (response.latencyMs > 0) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(Color(0xFF00897B).copy(alpha = 0.10f))
+                                .border(1.dp, Color(0xFF00897B).copy(alpha = 0.25f), RoundedCornerShape(12.dp))
+                                .padding(horizontal = 6.dp, vertical = 4.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Bolt,
+                                contentDescription = "Latency",
+                                tint = Color(0xFF00897B),
+                                modifier = Modifier.size(12.dp)
+                            )
+                            Spacer(modifier = Modifier.width(3.dp))
+                            Text(
+                                text = "${response.latencyMs}ms",
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF00897B)
+                            )
+                        }
+                    }
                 }
 
                 // Interactive Quick Action Buttons
@@ -148,6 +178,9 @@ fun VerifiedFactCard(
                         onClick = {
                             val hexHash = Integer.toHexString(topicQuery.hashCode()).uppercase().padStart(8, '0')
                             val signature = "CL-REG-${hexHash.take(4)}-${hexHash.drop(4)}-$confidencePct"
+                            val encodedQuery = Uri.encode(topicQuery)
+                            val shareUrl = "https://ais-pre-wijwveclzob5y5omrdcdec-257369852531.asia-southeast1.run.app/factcheck?query=$encodedQuery"
+                            
                             val shareText = "🔍 CIVICLENS ELECTION VERIFICATION REGISTRY\n" +
                                     "===========================================\n" +
                                     "✅ VERIFIED OFFICIAL BRIEFING CARD\n" +
@@ -158,6 +191,8 @@ fun VerifiedFactCard(
                                     "Citations Count: ${response.sourceCount} Official Source(s)\n\n" +
                                     "📋 AI FACT SUMMARY:\n" +
                                     "\"${response.summary}\"\n\n" +
+                                    "🔗 VERIFY ORIGINAL SOURCE & PLATFORM APP:\n" +
+                                    "$shareUrl\n\n" +
                                     "⚖️ Guarding democratic discourse with non-partisan, ECI-grounded verified evidence."
 
                             val intent = Intent(Intent.ACTION_SEND).apply {

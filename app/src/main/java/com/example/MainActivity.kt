@@ -4,11 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -21,6 +17,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import com.example.data.local.CivicLensDatabase
 import com.example.data.repository.CivicLensRepository
+import com.example.ui.ads.AdMobManager
+import com.example.ui.components.OnlineOnlyOverlay
 import com.example.ui.screens.*
 import com.example.ui.theme.MyApplicationTheme
 import com.example.viewmodel.CivicLensViewModel
@@ -29,6 +27,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // Initialize Google AdMob SDK
+        AdMobManager.initialize(this)
 
         // Setup Local Room DB and Constructor Injection DI
         val database = Room.databaseBuilder(
@@ -44,136 +45,131 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val currentTemplate by viewModel.currentTemplate.collectAsState()
+            val isOnline by viewModel.isOnline.collectAsState()
+
             MyApplicationTheme(templateName = currentTemplate) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val navController = rememberNavController()
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        val navController = rememberNavController()
 
-                    NavHost(
-                        navController = navController,
-                        startDestination = "home",
-                        enterTransition = {
-                            fadeIn(animationSpec = tween(220)) +
-                                slideInHorizontally(animationSpec = tween(220)) { it / 6 }
-                        },
-                        exitTransition = {
-                            fadeOut(animationSpec = tween(180)) +
-                                slideOutHorizontally(animationSpec = tween(180)) { -it / 6 }
-                        },
-                        popEnterTransition = {
-                            fadeIn(animationSpec = tween(220)) +
-                                slideInHorizontally(animationSpec = tween(220)) { -it / 6 }
-                        },
-                        popExitTransition = {
-                            fadeOut(animationSpec = tween(180)) +
-                                slideOutHorizontally(animationSpec = tween(180)) { it / 6 }
-                        }
-                    ) {
-                        composable("home") {
-                            HomeScreen(
-                                viewModel = viewModel,
-                                onNavigateToAssistant = { navController.navigate("assistant") },
-                                onNavigateToCompare = { navController.navigate("compare") },
-                                onNavigateToSchemes = { navController.navigate("schemes") },
-                                onNavigateToConstituency = { navController.navigate("constituency") },
-                                onNavigateToNews = { navController.navigate("news") },
-                                onNavigateToResearch = { navController.navigate("research") },
-                                onNavigateToBookmarks = { navController.navigate("bookmarks") },
-                                onNavigateToSettings = { navController.navigate("settings") },
-                                onNavigateToSentiment = { navController.navigate("sentiment_chart") },
-                                onNavigateToLegal = { navController.navigate("legal_rights") },
-                                onNavigateToVoterToolkit = { navController.navigate("voter_toolkit") }
-                            )
-                        }
+                        NavHost(
+                            navController = navController,
+                            startDestination = "home"
+                        ) {
+                            composable("home") {
+                                HomeScreen(
+                                    viewModel = viewModel,
+                                    onNavigateToAssistant = { navController.navigate("assistant") },
+                                    onNavigateToCompare = { navController.navigate("compare") },
+                                    onNavigateToSchemes = { navController.navigate("schemes") },
+                                    onNavigateToConstituency = { navController.navigate("constituency") },
+                                    onNavigateToNews = { navController.navigate("news") },
+                                    onNavigateToResearch = { navController.navigate("research") },
+                                    onNavigateToBookmarks = { navController.navigate("bookmarks") },
+                                    onNavigateToSettings = { navController.navigate("settings") },
+                                    onNavigateToSentiment = { navController.navigate("sentiment_chart") },
+                                    onNavigateToCandidateSearch = { navController.navigate("candidate_search") },
+                                    onNavigateToGovtJobHelper = { navController.navigate("govt_jobs") }
+                                )
+                            }
 
-                        composable("assistant") {
-                            AiAssistantScreen(
-                                viewModel = viewModel,
-                                onNavigateBack = { navController.popBackStack() }
-                            )
-                        }
+                            composable("govt_jobs") {
+                                GovtJobHelperScreen(
+                                    viewModel = viewModel,
+                                    onNavigateBack = { navController.popBackStack() },
+                                    onNavigateToAssistant = { navController.navigate("assistant") }
+                                )
+                            }
 
-                        composable("compare") {
-                            CompareScreen(
-                                viewModel = viewModel,
-                                onNavigateBack = { navController.popBackStack() },
-                                onNavigateToAssistant = { navController.navigate("assistant") }
-                            )
-                        }
+                            composable("candidate_search") {
+                                CandidateSearchScreen(
+                                    viewModel = viewModel,
+                                    onNavigateBack = { navController.popBackStack() },
+                                    onNavigateToCompare = { navController.navigate("compare") },
+                                    onNavigateToAssistant = { navController.navigate("assistant") }
+                                )
+                            }
 
-                        composable("schemes") {
-                            SchemesScreen(
-                                viewModel = viewModel,
-                                onNavigateBack = { navController.popBackStack() },
-                                onNavigateToAssistant = { navController.navigate("assistant") }
-                            )
-                        }
+                            composable("assistant") {
+                                AiAssistantScreen(
+                                    viewModel = viewModel,
+                                    onNavigateBack = { navController.popBackStack() }
+                                )
+                            }
 
-                        composable("constituency") {
-                            ConstituencyScreen(
-                                viewModel = viewModel,
-                                onNavigateBack = { navController.popBackStack() },
-                                onNavigateToAssistant = { navController.navigate("assistant") }
-                            )
-                        }
+                            composable("compare") {
+                                CompareScreen(
+                                    viewModel = viewModel,
+                                    onNavigateBack = { navController.popBackStack() },
+                                    onNavigateToAssistant = { navController.navigate("assistant") }
+                                )
+                            }
 
-                        composable("news") {
-                            NewsScreen(
-                                viewModel = viewModel,
-                                onNavigateBack = { navController.popBackStack() },
-                                onNavigateToAssistant = { navController.navigate("assistant") }
-                            )
-                        }
+                            composable("schemes") {
+                                SchemesScreen(
+                                    viewModel = viewModel,
+                                    onNavigateBack = { navController.popBackStack() },
+                                    onNavigateToAssistant = { navController.navigate("assistant") }
+                                )
+                            }
 
-                        composable("bookmarks") {
-                            BookmarksScreen(
-                                viewModel = viewModel,
-                                onNavigateBack = { navController.popBackStack() },
-                                onNavigateToSchemes = { navController.navigate("schemes") },
-                                onNavigateToNews = { navController.navigate("news") },
-                                onNavigateToCompare = { navController.navigate("compare") },
-                                onNavigateToAssistant = { navController.navigate("assistant") },
-                                onNavigateToLegal = { navController.navigate("legal_rights") },
-                                onNavigateToVoterToolkit = { navController.navigate("voter_toolkit") }
-                            )
-                        }
+                            composable("constituency") {
+                                ConstituencyScreen(
+                                    viewModel = viewModel,
+                                    onNavigateBack = { navController.popBackStack() },
+                                    onNavigateToAssistant = { navController.navigate("assistant") }
+                                )
+                            }
 
-                        composable("research") {
-                            DeepResearchScreen(
-                                viewModel = viewModel,
-                                onNavigateBack = { navController.popBackStack() }
-                            )
-                        }
+                            composable("news") {
+                                NewsScreen(
+                                    viewModel = viewModel,
+                                    onNavigateBack = { navController.popBackStack() },
+                                    onNavigateToAssistant = { navController.navigate("assistant") }
+                                )
+                            }
 
-                        composable("settings") {
-                            SettingsScreen(
-                                viewModel = viewModel,
-                                onNavigateBack = { navController.popBackStack() }
-                            )
-                        }
+                            composable("bookmarks") {
+                                BookmarksScreen(
+                                    viewModel = viewModel,
+                                    onNavigateBack = { navController.popBackStack() },
+                                    onNavigateToSchemes = { navController.navigate("schemes") },
+                                    onNavigateToNews = { navController.navigate("news") },
+                                    onNavigateToCompare = { navController.navigate("compare") },
+                                    onNavigateToAssistant = { navController.navigate("assistant") }
+                                )
+                            }
 
-                        composable("sentiment_chart") {
-                            SentimentChartScreen(
-                                viewModel = viewModel,
-                                onNavigateBack = { navController.popBackStack() }
-                            )
-                        }
+                            composable("research") {
+                                DeepResearchScreen(
+                                    viewModel = viewModel,
+                                    onNavigateBack = { navController.popBackStack() }
+                                )
+                            }
 
-                        composable("legal_rights") {
-                            LegalRightsScreen(
-                                viewModel = viewModel,
-                                onNavigateBack = { navController.popBackStack() }
-                            )
+                            composable("settings") {
+                                SettingsScreen(
+                                    viewModel = viewModel,
+                                    onNavigateBack = { navController.popBackStack() }
+                                )
+                            }
+
+                            composable("sentiment_chart") {
+                                SentimentChartScreen(
+                                    viewModel = viewModel,
+                                    onNavigateBack = { navController.popBackStack() }
+                                )
+                            }
                         }
 
-                        composable("voter_toolkit") {
-                            VoterToolkitScreen(
-                                viewModel = viewModel,
-                                onNavigateBack = { navController.popBackStack() }
-                            )
-                        }
+                        // App-wide Blocking Online Only Overlay
+                        OnlineOnlyOverlay(
+                            isOnline = isOnline,
+                            onRetry = { viewModel.retryConnection() }
+                        )
                     }
                 }
             }

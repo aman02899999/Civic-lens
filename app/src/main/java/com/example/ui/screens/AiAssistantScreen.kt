@@ -36,6 +36,7 @@ import com.example.ui.components.SourceCredibilityChart
 import com.example.ui.components.VerifiedFactCard
 import com.example.ui.components.CivicLensErrorDisplay
 import com.example.ui.components.ErrorType
+import com.example.ui.components.OfflineBanner
 import com.example.viewmodel.CivicLensViewModel
 import kotlinx.coroutines.launch
 
@@ -52,16 +53,12 @@ fun AiAssistantScreen(
     val isRecording by viewModel.isRecording.collectAsState()
     val bookmarks by viewModel.bookmarks.collectAsState()
     val searchHistory by viewModel.searchHistory.collectAsState()
+    val isOnline by viewModel.isOnline.collectAsState()
+    val responseLatencyMode by viewModel.responseLatencyMode.collectAsState()
 
     var textInput by remember { mutableStateOf("") }
-    var isThinkingMode by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
-
-    // Ensure the general civic session is active (e.g. if the user was previously in the Legal AI consult tab)
-    LaunchedEffect(Unit) {
-        viewModel.setChatSession("general")
-    }
 
     // Scroll to latest message on update
     LaunchedEffect(chatMessages.size) {
@@ -132,26 +129,41 @@ fun AiAssistantScreen(
                     .padding(horizontal = 16.dp, vertical = 8.dp)
                     .navigationBarsPadding()
             ) {
-                // High Thinking & Options Row
+                // Latency Response Mode Selector Row
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Switch(
-                            checked = isThinkingMode,
-                            onCheckedChange = { isThinkingMode = it },
-                            modifier = Modifier
-                                .scale(0.8f)
-                                .testTag("thinking_mode_switch")
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Ultra Fast Low Latency Chip
+                        FilterChip(
+                            selected = responseLatencyMode == "LOW_LATENCY",
+                            onClick = { viewModel.setResponseLatencyMode("LOW_LATENCY") },
+                            label = { Text("⚡ Fast (<500ms)", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
+                            leadingIcon = {
+                                Icon(Icons.Default.Bolt, contentDescription = null, modifier = Modifier.size(14.dp))
+                            },
+                            modifier = Modifier.testTag("low_latency_mode_chip")
                         )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = "Enable High Thinking (Gemini Pro)",
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = if (isThinkingMode) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+
+                        // Balanced Chip
+                        FilterChip(
+                            selected = responseLatencyMode == "BALANCED",
+                            onClick = { viewModel.setResponseLatencyMode("BALANCED") },
+                            label = { Text("⚖️ Balanced", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
+                            modifier = Modifier.testTag("balanced_mode_chip")
+                        )
+
+                        // Deep Reasoning Pro Chip
+                        FilterChip(
+                            selected = responseLatencyMode == "DEEP_REASONING",
+                            onClick = { viewModel.setResponseLatencyMode("DEEP_REASONING") },
+                            label = { Text("🧠 Pro", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
+                            modifier = Modifier.testTag("deep_reasoning_mode_chip")
                         )
                     }
                     
@@ -177,7 +189,6 @@ fun AiAssistantScreen(
                     // Voice input simulator
                     IconButton(
                         onClick = {
-                            // Simulate recording & transcribing standard query
                             val simulationQueries = listOf(
                                 "What is Narendra Modi's declared assets in his ECI affidavit?",
                                 "What are the eligibility benefits for PM-KISAN scheme?",
@@ -201,7 +212,12 @@ fun AiAssistantScreen(
                     TextField(
                         value = textInput,
                         onValueChange = { textInput = it },
-                        placeholder = { Text("Ask CivicLens AI...") },
+                        placeholder = { 
+                            Text(
+                                if (responseLatencyMode == "LOW_LATENCY") "⚡ Ask CivicLens AI (Instant mode)..." 
+                                else "Ask CivicLens AI..."
+                            ) 
+                        },
                         modifier = Modifier
                             .weight(1f)
                             .testTag("chat_input_text_field"),
@@ -214,7 +230,7 @@ fun AiAssistantScreen(
                             if (textInput.isNotEmpty()) {
                                 IconButton(
                                     onClick = {
-                                        viewModel.askAssistant(textInput, isThinkingMode)
+                                        viewModel.askAssistant(textInput, mode = responseLatencyMode)
                                         textInput = ""
                                     },
                                     modifier = Modifier.testTag("chat_send_button")
@@ -232,12 +248,22 @@ fun AiAssistantScreen(
             }
         }
     ) { innerPadding ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .background(MaterialTheme.colorScheme.background)
         ) {
+            OfflineBanner(
+                isOnline = isOnline,
+                onRetry = { viewModel.retryConnection() }
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f)
+            ) {
             if (chatMessages.isEmpty()) {
                 // Landing / Onboarding State
                 Column(
@@ -284,7 +310,7 @@ fun AiAssistantScreen(
                         Card(
                             onClick = {
                                 textInput = suggestion
-                                viewModel.askAssistant(suggestion, isThinkingMode)
+                                viewModel.askAssistant(suggestion, mode = responseLatencyMode)
                                 textInput = ""
                             },
                             modifier = Modifier
@@ -333,7 +359,7 @@ fun AiAssistantScreen(
                             Card(
                                 onClick = {
                                     textInput = historyItem.query
-                                    viewModel.askAssistant(historyItem.query, isThinkingMode)
+                                    viewModel.askAssistant(historyItem.query, mode = responseLatencyMode)
                                     textInput = ""
                                 },
                                 modifier = Modifier
@@ -391,7 +417,7 @@ fun AiAssistantScreen(
                                 // Find last user message
                                 val lastUserQuery = chatMessages.lastOrNull { it.isUser }?.text
                                 if (lastUserQuery != null) {
-                                    viewModel.askAssistant(lastUserQuery, isThinkingMode = isThinkingMode)
+                                    viewModel.askAssistant(lastUserQuery, mode = responseLatencyMode)
                                 }
                             },
                             onBrowseOffline = onNavigateBack
@@ -408,7 +434,11 @@ fun AiAssistantScreen(
                                 CircularProgressIndicator(modifier = Modifier.size(24.dp))
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Text(
-                                    text = if (isThinkingMode) "Gemini is performing deep reasoning..." else "Searching official sources...",
+                                    text = when (responseLatencyMode) {
+                                        "DEEP_REASONING" -> "Gemini Pro is performing deep reasoning..."
+                                        "LOW_LATENCY" -> "⚡ Gemini 3.1 Flash Lite is responding rapidly..."
+                                        else -> "Searching official sources..."
+                                    },
                                     fontSize = 13.sp,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -419,6 +449,7 @@ fun AiAssistantScreen(
             }
         }
     }
+}
 }
 
 @Composable
@@ -486,13 +517,15 @@ fun ChatMessageRow(
                 )
             }
         } else {
-            // AI response rendered via VerifiedFactCard
+            // AI response rendered via VerifiedFactCard with Latency Metrics
             val ragResponse = RagResponse(
                 summary = message.text,
                 confidenceScore = message.confidenceScore ?: 0.88,
                 sourceCount = message.sourceCount ?: 1,
                 lastUpdated = message.lastUpdated ?: "",
-                officialSources = message.officialSources ?: emptyList()
+                officialSources = message.officialSources ?: emptyList(),
+                latencyMs = message.latencyMs ?: 0L,
+                responseMode = message.responseMode ?: "Ultra Fast"
             )
             Column(
                 modifier = Modifier.fillMaxWidth(),

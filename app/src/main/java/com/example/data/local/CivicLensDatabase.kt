@@ -13,7 +13,8 @@ import androidx.room.TypeConverters
         DbVerifiedNews::class,
         DbBookmark::class,
         DbSearchHistory::class,
-        DbChatMessage::class
+        DbChatMessage::class,
+        DbGovtJob::class
     ],
     version = 1,
     exportSchema = false

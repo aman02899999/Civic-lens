@@ -1,6 +1,9 @@
 package com.example.ui.screens
 
+import android.content.Intent
 import com.example.R
+import com.example.ui.ads.AdMobBanner
+
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -28,6 +31,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -36,16 +40,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.data.local.DbVerifiedNews
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.ui.graphics.graphicsLayer
 import com.example.ui.components.FactCredibilityTagSet
 import com.example.ui.components.GlassCard
+import com.example.ui.components.OfflineBanner
 import com.example.ui.components.PoliticalSearchInput
-import com.example.ui.components.PulsingDot
 import com.example.ui.components.SeatsChart
-import com.example.ui.components.ShimmerListCard
-import com.example.ui.components.animatePressScale
 import com.example.viewmodel.CivicLensViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,11 +60,14 @@ fun HomeScreen(
     onNavigateToBookmarks: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onNavigateToSentiment: () -> Unit,
-    onNavigateToLegal: () -> Unit,
-    onNavigateToVoterToolkit: () -> Unit
+    onNavigateToCandidateSearch: () -> Unit,
+    onNavigateToGovtJobHelper: () -> Unit = {}
 ) {
     val news by viewModel.news.collectAsState()
     val searchHistory by viewModel.searchHistory.collectAsState()
+    val isOnline by viewModel.isOnline.collectAsState()
+    var searchInput by remember { mutableStateOf("") }
+    var activeSearch by remember { mutableStateOf(false) }
 
     val gradientBrush = Brush.verticalGradient(
         colors = listOf(
@@ -74,11 +76,15 @@ fun HomeScreen(
         )
     )
 
-    BoxWithConstraints(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(gradientBrush)
-    ) {
+    Scaffold(
+        bottomBar = { AdMobBanner() }
+    ) { paddingValues ->
+        BoxWithConstraints(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .background(gradientBrush)
+        ) {
         val useDualPane = maxWidth >= 768.dp
 
         Column(modifier = Modifier.fillMaxSize()) {
@@ -103,37 +109,12 @@ fun HomeScreen(
                             .clip(RoundedCornerShape(12.dp))
                     )
                     Column {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = "CivicLens AI",
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.ExtraBold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(6.dp))
-                                    .background(
-                                        Brush.horizontalGradient(
-                                            colors = listOf(
-                                                com.example.ui.theme.PremiumAccentGold,
-                                                com.example.ui.theme.PremiumAccentGold.copy(alpha = 0.7f)
-                                            )
-                                        )
-                                    )
-                                    .padding(horizontal = 6.dp, vertical = 2.dp)
-                                    .testTag("premium_badge")
-                            ) {
-                                Text(
-                                    text = "PREMIUM",
-                                    fontSize = 9.sp,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    letterSpacing = 0.5.sp,
-                                    color = Color(0xFF3D2E00)
-                                )
-                            }
-                        }
+                        Text(
+                            text = "CivicLens AI",
+                            style = MaterialTheme.typography.headlineMedium,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
                         Text(
                             text = "Verified Election Intelligence",
                             style = MaterialTheme.typography.bodySmall,
@@ -166,6 +147,12 @@ fun HomeScreen(
                     }
                 }
             }
+
+            // Real-time Offline Connection State Banner
+            OfflineBanner(
+                isOnline = isOnline,
+                onRetry = { viewModel.retryConnection() }
+            )
 
             if (useDualPane) {
                 // PREMIUM RESPONSIVE DUAL-PANE DESKTOP/TABLET GRID
@@ -285,7 +272,12 @@ fun HomeScreen(
                                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        PulsingDot(color = Color.White)
+                                        Box(
+                                            modifier = Modifier
+                                                .size(6.dp)
+                                                .clip(CircleShape)
+                                                .background(Color.White)
+                                        )
                                         Spacer(modifier = Modifier.width(4.dp))
                                         Text("LIVE TRACKER", fontSize = 10.sp, fontWeight = FontWeight.Bold)
                                     }
@@ -350,8 +342,8 @@ fun HomeScreen(
                             }
                             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                 FeatureButton(
-                                    title = "Schemes & Jobs",
-                                    subtitle = "Benefits & Govt Job Portals",
+                                    title = "Scheme Finder",
+                                    subtitle = "Factual Eligibility",
                                     icon = Icons.Default.Gavel,
                                     color = MaterialTheme.colorScheme.tertiary,
                                     modifier = Modifier.weight(1f).testTag("nav_schemes_feature"),
@@ -386,31 +378,32 @@ fun HomeScreen(
                             }
                             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                 FeatureButton(
-                                    title = "Speech Sentiment Mapping",
-                                    subtitle = "Compare Candidate Veracity",
-                                    icon = Icons.AutoMirrored.Filled.TrendingUp,
+                                    title = "Candidate Search",
+                                    subtitle = "Gemini Grounded Profiles",
+                                    icon = Icons.Default.PersonSearch,
                                     color = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.weight(1f).testTag("nav_sentiment_feature"),
-                                    onClick = onNavigateToSentiment
+                                    modifier = Modifier.weight(1f).testTag("nav_candidate_search_feature"),
+                                    onClick = onNavigateToCandidateSearch
                                 )
                                 FeatureButton(
-                                    title = "Know Your Rights",
-                                    subtitle = "Constitution, IPC/BNS & Legal Aid",
-                                    icon = Icons.Default.VerifiedUser,
-                                    color = MaterialTheme.colorScheme.secondary,
-                                    modifier = Modifier.weight(1f).testTag("nav_legal_feature"),
-                                    onClick = onNavigateToLegal
+                                    title = "Govt Job Helper",
+                                    subtitle = "Daily Links & Prep Guides",
+                                    icon = Icons.Default.Work,
+                                    color = MaterialTheme.colorScheme.tertiary,
+                                    modifier = Modifier.weight(1f).testTag("nav_govt_jobs_feature"),
+                                    onClick = onNavigateToGovtJobHelper
                                 )
                             }
                             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                 FeatureButton(
-                                    title = "Voter Toolkit",
-                                    subtitle = "Registration, EVM Guide & Helplines",
-                                    icon = Icons.Default.HowToVote,
-                                    color = MaterialTheme.colorScheme.tertiary,
-                                    modifier = Modifier.fillMaxWidth().testTag("nav_voter_feature"),
-                                    onClick = onNavigateToVoterToolkit
+                                    title = "Speech Sentiment",
+                                    subtitle = "Compare Veracity",
+                                    icon = Icons.AutoMirrored.Filled.TrendingUp,
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    modifier = Modifier.weight(1f).testTag("nav_sentiment_feature"),
+                                    onClick = onNavigateToSentiment
                                 )
+                                Spacer(modifier = Modifier.weight(1f))
                             }
                         }
 
@@ -437,12 +430,15 @@ fun HomeScreen(
                         }
 
                         if (news.isEmpty()) {
-                            repeat(3) {
-                                Card(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                            ) {
+                                Box(
+                                    modifier = Modifier.fillMaxWidth().padding(24.dp),
+                                    contentAlignment = Alignment.Center
                                 ) {
-                                    ShimmerListCard()
+                                    CircularProgressIndicator()
                                 }
                             }
                         } else {
@@ -665,7 +661,12 @@ fun HomeScreen(
                                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        PulsingDot(color = Color.White)
+                                        Box(
+                                            modifier = Modifier
+                                                .size(6.dp)
+                                                .clip(CircleShape)
+                                                .background(Color.White)
+                                        )
                                         Spacer(modifier = Modifier.width(4.dp))
                                         Text("LIVE TRACKER", fontSize = 10.sp, fontWeight = FontWeight.Bold)
                                     }
@@ -731,8 +732,8 @@ fun HomeScreen(
                             }
                             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                 FeatureButton(
-                                    title = "Schemes & Jobs",
-                                    subtitle = "Benefits & Govt Job Portals",
+                                    title = "Scheme Finder",
+                                    subtitle = "Factual Eligibility",
                                     icon = Icons.Default.Gavel,
                                     color = MaterialTheme.colorScheme.tertiary,
                                     modifier = Modifier
@@ -775,37 +776,38 @@ fun HomeScreen(
                             }
                             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                 FeatureButton(
-                                    title = "Speech Sentiment Mapping",
-                                    subtitle = "Compare Candidate Veracity",
-                                    icon = Icons.AutoMirrored.Filled.TrendingUp,
+                                    title = "Candidate Search",
+                                    subtitle = "Gemini Grounded Profiles",
+                                    icon = Icons.Default.PersonSearch,
                                     color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .testTag("nav_candidate_search_feature"),
+                                    onClick = onNavigateToCandidateSearch
+                                )
+                                FeatureButton(
+                                    title = "Govt Job Helper",
+                                    subtitle = "Daily Links & Prep Guides",
+                                    icon = Icons.Default.Work,
+                                    color = MaterialTheme.colorScheme.tertiary,
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .testTag("nav_govt_jobs_feature"),
+                                    onClick = onNavigateToGovtJobHelper
+                                )
+                            }
+                            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                FeatureButton(
+                                    title = "Speech Sentiment",
+                                    subtitle = "Compare Veracity",
+                                    icon = Icons.AutoMirrored.Filled.TrendingUp,
+                                    color = MaterialTheme.colorScheme.secondary,
                                     modifier = Modifier
                                         .weight(1f)
                                         .testTag("nav_sentiment_feature"),
                                     onClick = onNavigateToSentiment
                                 )
-                                FeatureButton(
-                                    title = "Know Your Rights",
-                                    subtitle = "Constitution, IPC/BNS & Legal Aid",
-                                    icon = Icons.Default.VerifiedUser,
-                                    color = MaterialTheme.colorScheme.secondary,
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .testTag("nav_legal_feature"),
-                                    onClick = onNavigateToLegal
-                                )
-                            }
-                            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                                FeatureButton(
-                                    title = "Voter Toolkit",
-                                    subtitle = "Registration, EVM Guide & Helplines",
-                                    icon = Icons.Default.HowToVote,
-                                    color = MaterialTheme.colorScheme.tertiary,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .testTag("nav_voter_feature"),
-                                    onClick = onNavigateToVoterToolkit
-                                )
+                                Spacer(modifier = Modifier.weight(1f))
                             }
                         }
                     }
@@ -840,14 +842,21 @@ fun HomeScreen(
                     }
 
                     if (news.isEmpty()) {
-                        items(3) {
+                        item {
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 6.dp),
-                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+                                    .padding(horizontal = 16.dp),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                             ) {
-                                ShimmerListCard()
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(24.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator()
+                                }
                             }
                         }
                     } else {
@@ -955,6 +964,7 @@ fun HomeScreen(
         }
     }
 }
+}
 
 @Composable
 fun FeatureButton(
@@ -965,23 +975,13 @@ fun FeatureButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-    val pressScale = animatePressScale(isPressed)
-
     ElevatedCard(
         onClick = onClick,
-        modifier = modifier
-            .height(100.dp)
-            .graphicsLayer {
-                scaleX = pressScale
-                scaleY = pressScale
-            },
+        modifier = modifier.height(100.dp),
         colors = CardDefaults.elevatedCardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        shape = RoundedCornerShape(16.dp),
-        interactionSource = interactionSource
+        shape = RoundedCornerShape(16.dp)
     ) {
         Row(
             modifier = Modifier
@@ -1029,6 +1029,8 @@ fun NewsCard(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
+    val context = LocalContext.current
+
     Card(
         onClick = onClick,
         modifier = modifier,
@@ -1043,7 +1045,7 @@ fun NewsCard(
         ) {
             Box(
                 modifier = Modifier
-                    .size(60.dp)
+                    .size(52.dp)
                     .clip(RoundedCornerShape(10.dp))
                     .background(
                         if (article.factCheckVerdict == "FALSE") Color(0xFFFFEBEE) else Color(
@@ -1056,7 +1058,7 @@ fun NewsCard(
                     imageVector = if (article.factCheckVerdict == "FALSE") Icons.Default.Error else Icons.Default.CheckCircle,
                     contentDescription = null,
                     tint = if (article.factCheckVerdict == "FALSE") Color(0xFFC62828) else Color(0xFF2E7D32),
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(28.dp)
                 )
             }
 
@@ -1072,8 +1074,12 @@ fun NewsCard(
                         text = article.source,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.primary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f, fill = false)
                     )
+                    Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = article.date,
                         fontSize = 11.sp,
@@ -1094,6 +1100,37 @@ fun NewsCard(
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
+                )
+            }
+
+            IconButton(
+                onClick = {
+                    val confidencePct = (article.confidenceScore * 100).toInt()
+                    val shareText = "🔍 CIVICLENS VERIFIED ELECTION NEWS\n" +
+                            "===========================================\n" +
+                            "📰 Title: ${article.title}\n" +
+                            "🏛 Source: ${article.source} (${article.date})\n" +
+                            "✅ Confidence Score: $confidencePct%\n\n" +
+                            "📋 Summary:\n\"${article.content}\"\n\n" +
+                            "🔗 Read original report: ${article.originalUrl.ifEmpty { "https://pib.gov.in" }}\n\n" +
+                            "⚖️ Powered by CivicLens AI — Non-Partisan Verified Election Intelligence."
+
+                    val intent = Intent(Intent.ACTION_SEND).apply {
+                        type = "text/plain"
+                        putExtra(Intent.EXTRA_SUBJECT, "CivicLens Verified News: ${article.title}")
+                        putExtra(Intent.EXTRA_TEXT, shareText)
+                    }
+                    context.startActivity(Intent.createChooser(intent, "Share Verified Election News"))
+                },
+                modifier = Modifier
+                    .size(36.dp)
+                    .testTag("home_share_button_${article.id}")
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Share,
+                    contentDescription = "Share election news",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(18.dp)
                 )
             }
         }

@@ -1,21 +1,43 @@
 # Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
 # For more details, see
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Preserve line numbers and source file names for production crash reports
+-keepattributes SourceFile,LineNumberTable
+-keepattributes *Annotation*,Signature,InnerClasses,EnclosingMethod
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Keep Moshi models and annotations
+-keepclassmembers class * {
+    @com.squareup.moshi.Json <fields>;
+    @com.squareup.moshi.JsonQualifier <fields>;
+}
+-keep class *JsonAdapter {
+    public <init>(com.squareup.moshi.Moshi);
+    public <init>(com.squareup.moshi.Moshi, java.lang.reflect.Type[]);
+}
+-keep @com.squareup.moshi.JsonClass class * { *; }
+-keep class com.example.data.remote.** { *; }
+-keep class com.example.data.local.** { *; }
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Keep Room database and entities
+-keep class androidx.room.Room
+-keepclassmembers class * extends androidx.room.RoomDatabase {
+    public <init>();
+    public <fields>;
+    public <methods>;
+}
+-keep class * extends androidx.room.RoomDatabase
+-keep @androidx.room.Entity class * { *; }
+-keep @androidx.room.Dao class * { *; }
+
+# Keep Retrofit interface and service definitions
+-keepattributes Signature
+-keepattributes Exceptions
+-keepclasseswithmembers class * {
+    @retrofit2.http.* <methods>;
+}
+
+# Keep Google Play Services Ads / AdMob
+-keep class com.google.android.gms.ads.** { *; }
+-keep interface com.google.android.gms.ads.** { *; }
+

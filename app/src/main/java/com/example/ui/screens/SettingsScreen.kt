@@ -12,7 +12,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Storage
@@ -27,6 +26,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.ui.ads.AdMobBanner
+import com.example.ui.ads.AdMobManager
 import com.example.ui.components.GlassCard
 import com.example.viewmodel.CivicLensViewModel
 
@@ -205,7 +206,7 @@ fun SettingsScreen(
                             ) {
                                 Text(lang, fontSize = 14.sp)
                                 if (currentLanguage == lang.substringBefore(" ")) {
-                                    Icon(Icons.Default.Check, contentDescription = "Selected", tint = MaterialTheme.colorScheme.primary)
+                                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Selected", tint = MaterialTheme.colorScheme.primary)
                                 }
                             }
                         }
@@ -248,6 +249,62 @@ fun SettingsScreen(
                     ) {
                         Text("Government Schemes Cached", fontSize = 13.sp)
                         Text("3", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                    }
+                }
+            }
+
+            // 2.5. Google Play Store AdMob Configuration & Demo
+            item {
+                val context = androidx.compose.ui.platform.LocalContext.current
+                val activity = context as? android.app.Activity
+
+                GlassCard(modifier = Modifier.fillMaxWidth().testTag("admob_settings_card")) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Surface(
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            modifier = Modifier.size(36.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Text("$", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            Text("Google AdMob Integration", fontWeight = FontWeight.Bold)
+                            Text("Google PlayStore Ads • Active", fontSize = 12.sp, color = MaterialTheme.colorScheme.primary)
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+                    HorizontalDivider()
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Text("AdMob App ID:", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("ca-app-pub-3940256099942544~3347511713", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Text("Active Banner Ad Unit:", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(AdMobManager.TEST_BANNER_AD_UNIT_ID, fontSize = 11.sp, fontWeight = FontWeight.Medium)
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    AdMobBanner()
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Button(
+                        onClick = {
+                            activity?.let {
+                                AdMobManager.showInterstitialAd(it) {
+                                    android.widget.Toast.makeText(context, "Interstitial Ad Dismissed", android.widget.Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth().testTag("show_interstitial_ad_button")
+                    ) {
+                        Text("Trigger Test Interstitial Ad (Play Store Promo)")
                     }
                 }
             }

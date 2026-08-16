@@ -1,6 +1,5 @@
 package com.example.data.remote
 
-import com.example.BuildConfig
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.OkHttpClient
@@ -16,10 +15,8 @@ object RetrofitClient {
         .add(KotlinJsonAdapterFactory())
         .build()
 
-    // BODY logging prints the full request URL — which carries the Gemini API key as a query
-    // parameter — plus all AI content to logcat, so it must never be enabled in release builds.
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
-        level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
+        level = HttpLoggingInterceptor.Level.BODY
     }
 
     private val okHttpClient = OkHttpClient.Builder()

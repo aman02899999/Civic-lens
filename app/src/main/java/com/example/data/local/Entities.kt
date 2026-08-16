@@ -107,9 +107,36 @@ data class DbChatMessage(
     val isUser: Boolean,
     val text: String,
     val timestamp: Long = System.currentTimeMillis(),
-    // RAG Metadata
+    // RAG Metadata & Performance
     val confidenceScore: Double? = null,
     val sourceCount: Int? = null,
     val lastUpdated: String? = null,
-    val officialSources: List<String>? = null
+    val officialSources: List<String>? = null,
+    val latencyMs: Long? = null,
+    val responseMode: String? = null
+)
+
+@Entity(tableName = "govt_jobs")
+data class DbGovtJob(
+    @PrimaryKey val id: String,
+    val title: String,
+    val organization: String,
+    val category: String, // "UPSC & Central", "Banking & Finance", "Railways RRB", "Defense & Police", "State PSC & Teaching"
+    val totalVacancies: String,
+    val salaryScale: String = "",
+    val lastDateToApply: String,
+    val eligibilityCriteria: String,
+    val ageLimit: String,
+    val applicationFee: String,
+    val officialPortalName: String,
+    val officialApplyUrl: String,
+    val whereToApply: String,
+    val howToApplySteps: List<String>,
+    val requiredDocuments: List<String>,
+    val selectionProcess: List<String>,
+    val prepGuideSummary: String,
+    val prepStrategySteps: List<String>,
+    val syllabusOverview: String,
+    val isLatestNotification: Boolean = true,
+    val lastUpdatedDate: String = ""
 )

@@ -153,3 +153,66 @@ data class LiveNewsArticle(
 data class LiveNewsResponse(
     val articles: List<LiveNewsArticle>
 )
+
+@JsonClass(generateAdapter = true)
+data class CandidateQueryResponse(
+    val query: String,
+    val candidateName: String,
+    val partyName: String,
+    val constituency: String,
+    val currentRole: String,
+    val education: String,
+    val declaredAssets: String,
+    val criminalCasesCount: Int,
+    val summaryBio: String,
+    val keyStancesAndPromises: List<String>,
+    val verifiedAchievements: List<String>,
+    val controversiesAndFactChecks: List<CandidateFactCheck>,
+    val officialCitations: List<CandidateCitation>,
+    val confidenceScore: Double
+)
+
+@JsonClass(generateAdapter = true)
+data class CandidateFactCheck(
+    val claimOrIssue: String,
+    val verdict: String,
+    val explanation: String
+)
+
+@JsonClass(generateAdapter = true)
+data class CandidateCitation(
+    val sourceName: String,
+    val url: String
+)
+
+@JsonClass(generateAdapter = true)
+data class GovtJobSearchResponse(
+    val lastUpdatedDate: String,
+    val totalAlertsFound: Int,
+    val jobs: List<GovtJobItem>
+)
+
+@JsonClass(generateAdapter = true)
+data class GovtJobItem(
+    val id: String,
+    val title: String,
+    val organization: String,
+    val category: String,
+    val totalVacancies: String,
+    val salaryScale: String = "",
+    val lastDateToApply: String,
+    val eligibilityCriteria: String,
+    val ageLimit: String,
+    val applicationFee: String,
+    val officialPortalName: String,
+    val officialApplyUrl: String,
+    val whereToApply: String,
+    val howToApplySteps: List<String>,
+    val requiredDocuments: List<String>,
+    val selectionProcess: List<String>,
+    val prepGuideSummary: String,
+    val prepStrategySteps: List<String>,
+    val syllabusOverview: String,
+    val isLatestNotification: Boolean = true
+)
+

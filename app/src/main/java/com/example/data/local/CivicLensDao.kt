@@ -100,4 +100,18 @@ interface CivicLensDao {
 
     @Query("DELETE FROM chat_messages WHERE sessionName = :sessionName")
     suspend fun clearChatSession(sessionName: String)
+
+    // --- Government Jobs ---
+    @Query("SELECT * FROM govt_jobs ORDER BY isLatestNotification DESC, id ASC")
+    fun getAllGovtJobs(): Flow<List<DbGovtJob>>
+
+    @Query("SELECT * FROM govt_jobs WHERE category = :category ORDER BY id ASC")
+    fun getGovtJobsByCategory(category: String): Flow<List<DbGovtJob>>
+
+    @Query("SELECT * FROM govt_jobs WHERE title LIKE '%' || :query || '%' OR organization LIKE '%' || :query || '%' OR category LIKE '%' || :query || '%'")
+    fun searchGovtJobs(query: String): Flow<List<DbGovtJob>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertGovtJobs(jobs: List<DbGovtJob>)
 }
+

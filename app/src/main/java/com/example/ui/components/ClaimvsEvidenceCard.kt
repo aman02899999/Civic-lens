@@ -1,5 +1,6 @@
 package com.example.ui.components
 
+import android.content.Intent
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -14,10 +15,12 @@ import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Campaign
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.FormatQuote
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -27,6 +30,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -58,6 +62,8 @@ fun ClaimvsEvidenceCard(
         animationSpec = tween(600),
         label = "fade_in"
     )
+
+    val context = LocalContext.current
 
     ElevatedCard(
         modifier = modifier
@@ -99,40 +105,87 @@ fun ClaimvsEvidenceCard(
                     )
                 }
 
-                // Verdict Badge
-                val verdictColor = when (news.factCheckVerdict.uppercase()) {
-                    "FALSE", "FAKE", "DEBUNKED" -> Color(0xFFC62828)
-                    "TRUE", "VERIFIED" -> Color(0xFF2E7D32)
-                    "MISLEADING" -> Color(0xFFEF6C00)
-                    else -> MaterialTheme.colorScheme.primary
-                }
-                val verdictLabel = if (news.factCheckVerdict.isNotBlank()) news.factCheckVerdict else "UNVERIFIED"
-
                 Row(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(verdictColor.copy(alpha = 0.12f))
-                        .border(1.dp, verdictColor.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
-                        .padding(horizontal = 8.dp, vertical = 3.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    Icon(
-                        imageVector = when (news.factCheckVerdict.uppercase()) {
-                            "FALSE", "FAKE", "DEBUNKED" -> Icons.Default.Block
-                            "TRUE", "VERIFIED" -> Icons.Default.CheckCircle
-                            else -> Icons.AutoMirrored.Filled.HelpOutline
+                    // Verdict Badge
+                    val verdictColor = when (news.factCheckVerdict.uppercase()) {
+                        "FALSE", "FAKE", "DEBUNKED" -> Color(0xFFC62828)
+                        "TRUE", "VERIFIED" -> Color(0xFF2E7D32)
+                        "MISLEADING" -> Color(0xFFEF6C00)
+                        else -> MaterialTheme.colorScheme.primary
+                    }
+                    val verdictLabel = if (news.factCheckVerdict.isNotBlank()) news.factCheckVerdict else "UNVERIFIED"
+
+                    Row(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(verdictColor.copy(alpha = 0.12f))
+                            .border(1.dp, verdictColor.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                            .padding(horizontal = 8.dp, vertical = 3.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = when (news.factCheckVerdict.uppercase()) {
+                                "FALSE", "FAKE", "DEBUNKED" -> Icons.Default.Block
+                                "TRUE", "VERIFIED" -> Icons.Default.CheckCircle
+                                else -> Icons.AutoMirrored.Filled.HelpOutline
+                            },
+                            contentDescription = "Verdict Icon",
+                            tint = verdictColor,
+                            modifier = Modifier.size(12.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = verdictLabel,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = verdictColor
+                        )
+                    }
+
+                    // Share Claim vs Evidence Intent Button
+                    IconButton(
+                        onClick = {
+                            val confidencePct = (news.confidenceScore * 100).toInt()
+                            val hexHash = Integer.toHexString(news.title.hashCode()).uppercase().padStart(8, '0')
+                            val signature = "CL-MAPPING-${hexHash.take(4)}-$confidencePct"
+                            val shareUrl = "https://ais-pre-wijwveclzob5y5omrdcdec-257369852531.asia-southeast1.run.app/news?id=${news.id}"
+
+                            val shareText = "🔍 CIVICLENS VERIFIED CLAIM VS EVIDENCE MAPPING\n" +
+                                    "===========================================\n" +
+                                    "VERDICT: ${verdictLabel.uppercase()}\n" +
+                                    "Source: ${news.source}\n" +
+                                    "Grounding Level: $confidencePct%\n" +
+                                    "Signature: $signature\n" +
+                                    "-------------------------------------------\n" +
+                                    "📢 VIRAL CLAIM:\n" +
+                                    "\"$claim\"\n\n" +
+                                    "✅ GROUNDED TRUTH / EVIDENCE:\n" +
+                                    "\"$evidence\"\n\n" +
+                                    "🔗 VERIFY ORIGINAL REPORT IN APP:\n" +
+                                    "$shareUrl\n\n" +
+                                    "⚖️ Guarding democratic discourse with non-partisan, ECI & PIB grounded verified evidence."
+
+                            val intent = Intent(Intent.ACTION_SEND).apply {
+                                type = "text/plain"
+                                putExtra(Intent.EXTRA_SUBJECT, "CivicLens Fact-Check: $claim")
+                                putExtra(Intent.EXTRA_TEXT, shareText)
+                            }
+                            context.startActivity(Intent.createChooser(intent, "Share Fact-Check Verification"))
                         },
-                        contentDescription = "Verdict Icon",
-                        tint = verdictColor,
-                        modifier = Modifier.size(12.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = verdictLabel,
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = verdictColor
-                    )
+                        modifier = Modifier
+                            .size(28.dp)
+                            .testTag("share_claim_mapping_button_${news.id}")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = "Share Fact Check",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
                 }
             }
 
