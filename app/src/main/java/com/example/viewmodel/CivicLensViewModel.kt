@@ -497,4 +497,68 @@ class CivicLensViewModel(
         _candidateSearchResult.value = null
         _candidateSearchError.value = null
     }
+
+    // --- Google Search Election Claim Verification Service ---
+    private val _claimVerificationQuery = MutableStateFlow("")
+    val claimVerificationQuery: StateFlow<String> = _claimVerificationQuery.asStateFlow()
+
+    private val _claimVerificationCategory = MutableStateFlow("All Topics")
+    val claimVerificationCategory: StateFlow<String> = _claimVerificationCategory.asStateFlow()
+
+    private val _claimVerificationResult = MutableStateFlow<com.example.data.remote.ElectionClaimVerificationResult?>(null)
+    val claimVerificationResult: StateFlow<com.example.data.remote.ElectionClaimVerificationResult?> = _claimVerificationResult.asStateFlow()
+
+    private val _isClaimVerificationLoading = MutableStateFlow(false)
+    val isClaimVerificationLoading: StateFlow<Boolean> = _isClaimVerificationLoading.asStateFlow()
+
+    private val _claimVerificationError = MutableStateFlow<String?>(null)
+    val claimVerificationError: StateFlow<String?> = _claimVerificationError.asStateFlow()
+
+    private val _claimVerificationHistory = MutableStateFlow<List<com.example.data.remote.ElectionClaimVerificationResult>>(emptyList())
+    val claimVerificationHistory: StateFlow<List<com.example.data.remote.ElectionClaimVerificationResult>> = _claimVerificationHistory.asStateFlow()
+
+    fun updateClaimVerificationQuery(query: String) {
+        _claimVerificationQuery.value = query
+    }
+
+    fun setClaimVerificationCategory(category: String) {
+        _claimVerificationCategory.value = category
+    }
+
+    fun verifyElectionClaim(query: String = _claimVerificationQuery.value, category: String = _claimVerificationCategory.value) {
+        if (query.isBlank()) return
+        _claimVerificationQuery.value = query
+        _isClaimVerificationLoading.value = true
+        _claimVerificationError.value = null
+
+        viewModelScope.launch {
+            try {
+                repository.insertSearchQuery(query)
+                val result = repository.verifyElectionClaimWithGoogleSearch(query, category)
+                _claimVerificationResult.value = result
+
+                // Append to verification history list if not already present
+                val currentHistory = _claimVerificationHistory.value.toMutableList()
+                currentHistory.removeAll { it.claimText.equals(result.claimText, ignoreCase = true) }
+                currentHistory.add(0, result)
+                _claimVerificationHistory.value = currentHistory.take(15)
+            } catch (e: Exception) {
+                _claimVerificationError.value = "Verification error: ${e.localizedMessage}"
+            } finally {
+                _isClaimVerificationLoading.value = false
+            }
+        }
+    }
+
+    fun selectHistoryClaim(item: com.example.data.remote.ElectionClaimVerificationResult) {
+        _claimVerificationQuery.value = item.claimText
+        _claimVerificationResult.value = item
+    }
+
+    fun clearClaimVerification() {
+        _claimVerificationQuery.value = ""
+        _claimVerificationResult.value = null
+        _claimVerificationError.value = null
+    }
 }
+

@@ -216,3 +216,36 @@ data class GovtJobItem(
     val isLatestNotification: Boolean = true
 )
 
+@JsonClass(generateAdapter = true)
+data class RealTimeNewsSource(
+    val title: String,
+    val publisher: String,
+    val url: String,
+    val publishedDate: String = "",
+    val relevanceSnippet: String = ""
+)
+
+@JsonClass(generateAdapter = true)
+data class ClaimEvidencePoint(
+    val pointTitle: String,
+    val evidenceDetail: String,
+    val sourceName: String
+)
+
+@JsonClass(generateAdapter = true)
+data class ElectionClaimVerificationResult(
+    val claimText: String,
+    val verdict: String, // e.g. "VERIFIED TRUE", "DEBUNKED FALSE", "MISLEADING", "PARTIALLY TRUE", "UNVERIFIED"
+    val verdictSummary: String,
+    val confidenceScore: Double,
+    val truthScorePercent: Int,
+    val claimContext: String,
+    val factCheckBreakdown: String,
+    val keyEvidencePoints: List<ClaimEvidencePoint>,
+    val realTimeNewsSources: List<RealTimeNewsSource>,
+    val officialPortalsChecked: List<String>,
+    val recommendedClarification: String,
+    val timestamp: String = ""
+)
+
+

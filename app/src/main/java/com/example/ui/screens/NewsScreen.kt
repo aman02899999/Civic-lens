@@ -50,7 +50,8 @@ import com.example.viewmodel.CivicLensViewModel
 fun NewsScreen(
     viewModel: CivicLensViewModel,
     onNavigateBack: () -> Unit,
-    onNavigateToAssistant: () -> Unit
+    onNavigateToAssistant: () -> Unit,
+    onNavigateToClaimVerification: () -> Unit = {}
 ) {
     val news by viewModel.news.collectAsState()
     val bookmarks by viewModel.bookmarks.collectAsState()
@@ -135,6 +136,16 @@ fun NewsScreen(
                     }
                 },
                 actions = {
+                    IconButton(
+                        onClick = onNavigateToClaimVerification,
+                        modifier = Modifier.testTag("news_verify_claim_action")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.TravelExplore,
+                            contentDescription = "Verify Election Claim",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                     if (selectedTab == 2) {
                         IconButton(
                             onClick = { viewModel.refreshLiveNews() },

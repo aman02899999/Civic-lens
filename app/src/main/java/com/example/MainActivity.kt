@@ -72,9 +72,20 @@ class MainActivity : ComponentActivity() {
                                     onNavigateToSettings = { navController.navigate("settings") },
                                     onNavigateToSentiment = { navController.navigate("sentiment_chart") },
                                     onNavigateToCandidateSearch = { navController.navigate("candidate_search") },
-                                    onNavigateToGovtJobHelper = { navController.navigate("govt_jobs") }
+                                    onNavigateToGovtJobHelper = { navController.navigate("govt_jobs") },
+                                    onNavigateToClaimVerification = { navController.navigate("claim_verification") }
                                 )
                             }
+
+                            composable("claim_verification") {
+                                ClaimVerificationScreen(
+                                    viewModel = viewModel,
+                                    onNavigateBack = { navController.popBackStack() },
+                                    onNavigateToNews = { navController.navigate("news") },
+                                    onNavigateToAssistant = { navController.navigate("assistant") }
+                                )
+                            }
+
 
                             composable("govt_jobs") {
                                 GovtJobHelperScreen(
@@ -128,7 +139,8 @@ class MainActivity : ComponentActivity() {
                                 NewsScreen(
                                     viewModel = viewModel,
                                     onNavigateBack = { navController.popBackStack() },
-                                    onNavigateToAssistant = { navController.navigate("assistant") }
+                                    onNavigateToAssistant = { navController.navigate("assistant") },
+                                    onNavigateToClaimVerification = { navController.navigate("claim_verification") }
                                 )
                             }
 

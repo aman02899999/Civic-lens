@@ -61,7 +61,8 @@ fun HomeScreen(
     onNavigateToSettings: () -> Unit,
     onNavigateToSentiment: () -> Unit,
     onNavigateToCandidateSearch: () -> Unit,
-    onNavigateToGovtJobHelper: () -> Unit = {}
+    onNavigateToGovtJobHelper: () -> Unit = {},
+    onNavigateToClaimVerification: () -> Unit = {}
 ) {
     val news by viewModel.news.collectAsState()
     val searchHistory by viewModel.searchHistory.collectAsState()
@@ -396,6 +397,14 @@ fun HomeScreen(
                             }
                             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                 FeatureButton(
+                                    title = "Claim Verifier",
+                                    subtitle = "Google Search Fact-Check",
+                                    icon = Icons.Default.TravelExplore,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.weight(1f).testTag("nav_claim_verifier_feature_dp"),
+                                    onClick = onNavigateToClaimVerification
+                                )
+                                FeatureButton(
                                     title = "Speech Sentiment",
                                     subtitle = "Compare Veracity",
                                     icon = Icons.AutoMirrored.Filled.TrendingUp,
@@ -403,7 +412,6 @@ fun HomeScreen(
                                     modifier = Modifier.weight(1f).testTag("nav_sentiment_feature"),
                                     onClick = onNavigateToSentiment
                                 )
-                                Spacer(modifier = Modifier.weight(1f))
                             }
                         }
 
@@ -798,6 +806,16 @@ fun HomeScreen(
                             }
                             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                 FeatureButton(
+                                    title = "Claim Verifier",
+                                    subtitle = "Google Search Fact-Check",
+                                    icon = Icons.Default.TravelExplore,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .testTag("nav_claim_verifier_feature"),
+                                    onClick = onNavigateToClaimVerification
+                                )
+                                FeatureButton(
                                     title = "Speech Sentiment",
                                     subtitle = "Compare Veracity",
                                     icon = Icons.AutoMirrored.Filled.TrendingUp,
@@ -807,7 +825,6 @@ fun HomeScreen(
                                         .testTag("nav_sentiment_feature"),
                                     onClick = onNavigateToSentiment
                                 )
-                                Spacer(modifier = Modifier.weight(1f))
                             }
                         }
                     }
