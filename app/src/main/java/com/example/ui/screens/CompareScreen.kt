@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.local.DbCandidate
 import com.example.data.local.DbPoliticalParty
+import com.example.ui.ads.AdMobBanner
 import com.example.ui.components.GlassCard
 import com.example.ui.components.CandidatePlatformComparisonCard
 import com.example.viewmodel.CivicLensViewModel
@@ -113,7 +114,8 @@ fun CompareScreen(
                     }
                 }
             )
-        }
+        },
+        bottomBar = { AdMobBanner() }
     ) { innerPadding ->
         Column(
             modifier = Modifier

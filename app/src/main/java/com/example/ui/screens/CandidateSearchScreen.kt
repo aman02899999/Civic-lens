@@ -36,6 +36,7 @@ import com.example.R
 import com.example.data.remote.CandidateCitation
 import com.example.data.remote.CandidateFactCheck
 import com.example.data.remote.CandidateQueryResponse
+import com.example.ui.ads.AdMobBanner
 import com.example.ui.components.CivicLensErrorDisplay
 import com.example.ui.components.ErrorType
 import com.example.ui.components.GlassCard
@@ -142,7 +143,8 @@ fun CandidateSearchScreen(
                     }
                 }
             )
-        }
+        },
+        bottomBar = { AdMobBanner() }
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier

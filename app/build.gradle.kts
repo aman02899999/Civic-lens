@@ -17,8 +17,8 @@ android {
     applicationId = "com.aistudio.civiclensai.vqzpx"
     minSdk = 24
     targetSdk = 36
-    versionCode = 2
-    versionName = "0.0.0.2"
+    versionCode = 4
+    versionName = "4.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }

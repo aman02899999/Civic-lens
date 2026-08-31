@@ -35,6 +35,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.local.DbVerifiedNews
+import com.example.ui.ads.AdMobBanner
 import com.example.ui.components.ClaimvsEvidenceCard
 import com.example.ui.components.CivicLensErrorDisplay
 import com.example.ui.components.ErrorType
@@ -161,7 +162,8 @@ fun NewsScreen(
                     }
                 }
             )
-        }
+        },
+        bottomBar = { AdMobBanner() }
     ) { innerPadding ->
         Column(
             modifier = Modifier

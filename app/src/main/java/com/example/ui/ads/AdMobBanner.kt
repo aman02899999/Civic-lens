@@ -30,50 +30,62 @@ object AdMobManager {
 
     fun initialize(context: Context) {
         if (!isInitialized) {
-            MobileAds.initialize(context) { initializationStatus ->
-                isInitialized = true
-                Log.d("AdMobManager", "AdMob initialized successfully: ${initializationStatus.adapterStatusMap}")
+            try {
+                MobileAds.initialize(context) { initializationStatus ->
+                    isInitialized = true
+                    Log.d("AdMobManager", "AdMob initialized successfully: ${initializationStatus.adapterStatusMap}")
+                }
+                loadInterstitialAd(context)
+            } catch (e: Throwable) {
+                Log.w("AdMobManager", "AdMob init ignored in preview/sandbox: ${e.message}")
             }
-            loadInterstitialAd(context)
         }
     }
 
     fun loadInterstitialAd(context: Context, adUnitId: String = TEST_INTERSTITIAL_AD_UNIT_ID) {
-        val adRequest = AdRequest.Builder().build()
-        InterstitialAd.load(
-            context,
-            adUnitId,
-            adRequest,
-            object : InterstitialAdLoadCallback() {
-                override fun onAdLoaded(interstitialAd: InterstitialAd) {
-                    mInterstitialAd = interstitialAd
-                    Log.d("AdMobManager", "Interstitial Ad loaded.")
-                }
+        try {
+            val adRequest = AdRequest.Builder().build()
+            InterstitialAd.load(
+                context,
+                adUnitId,
+                adRequest,
+                object : InterstitialAdLoadCallback() {
+                    override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                        mInterstitialAd = interstitialAd
+                        Log.d("AdMobManager", "Interstitial Ad loaded.")
+                    }
 
-                override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                    mInterstitialAd = null
-                    Log.e("AdMobManager", "Interstitial Ad failed to load: ${loadAdError.message}")
+                    override fun onAdFailedToLoad(loadAdError: LoadAdError) {
+                        mInterstitialAd = null
+                        Log.e("AdMobManager", "Interstitial Ad failed to load: ${loadAdError.message}")
+                    }
                 }
-            }
-        )
+            )
+        } catch (e: Throwable) {
+            Log.w("AdMobManager", "Interstitial ad load failed: ${e.message}")
+        }
     }
 
     fun showInterstitialAd(activity: Activity, onAdClosed: () -> Unit) {
-        if (mInterstitialAd != null) {
-            mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
-                override fun onAdDismissedFullScreenContent() {
-                    mInterstitialAd = null
-                    loadInterstitialAd(activity)
-                    onAdClosed()
-                }
+        try {
+            if (mInterstitialAd != null) {
+                mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
+                    override fun onAdDismissedFullScreenContent() {
+                        mInterstitialAd = null
+                        loadInterstitialAd(activity)
+                        onAdClosed()
+                    }
 
-                override fun onAdFailedToShowFullScreenContent(adError: AdError) {
-                    mInterstitialAd = null
-                    onAdClosed()
+                    override fun onAdFailedToShowFullScreenContent(adError: AdError) {
+                        mInterstitialAd = null
+                        onAdClosed()
+                    }
                 }
+                mInterstitialAd?.show(activity)
+            } else {
+                onAdClosed()
             }
-            mInterstitialAd?.show(activity)
-        } else {
+        } catch (e: Throwable) {
             onAdClosed()
         }
     }
@@ -85,8 +97,6 @@ fun AdMobBanner(
     adUnitId: String = AdMobManager.TEST_BANNER_AD_UNIT_ID,
     adSize: AdSize = AdSize.BANNER
 ) {
-    val context = LocalContext.current
-
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -108,19 +118,23 @@ fun AdMobBanner(
                 .fillMaxWidth()
                 .height(50.dp),
             factory = { ctx ->
-                AdView(ctx).apply {
-                    setAdSize(adSize)
-                    setAdUnitId(adUnitId)
-                    adListener = object : AdListener() {
-                        override fun onAdLoaded() {
-                            Log.d("AdMobBanner", "AdMob Banner loaded.")
-                        }
+                try {
+                    AdView(ctx).apply {
+                        setAdSize(adSize)
+                        setAdUnitId(adUnitId)
+                        adListener = object : AdListener() {
+                            override fun onAdLoaded() {
+                                Log.d("AdMobBanner", "AdMob Banner loaded.")
+                            }
 
-                        override fun onAdFailedToLoad(error: LoadAdError) {
-                            Log.e("AdMobBanner", "AdMob Banner failed to load: ${error.message}")
+                            override fun onAdFailedToLoad(error: LoadAdError) {
+                                Log.e("AdMobBanner", "AdMob Banner failed to load: ${error.message}")
+                            }
                         }
+                        loadAd(AdRequest.Builder().build())
                     }
-                    loadAd(AdRequest.Builder().build())
+                } catch (e: Throwable) {
+                    android.view.View(ctx)
                 }
             }
         )

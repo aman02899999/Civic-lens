@@ -18,7 +18,6 @@ import androidx.room.Room
 import com.example.data.local.CivicLensDatabase
 import com.example.data.repository.CivicLensRepository
 import com.example.ui.ads.AdMobManager
-import com.example.ui.components.OnlineOnlyOverlay
 import com.example.ui.screens.*
 import com.example.ui.theme.MyApplicationTheme
 import com.example.viewmodel.CivicLensViewModel
@@ -28,8 +27,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // Initialize Google AdMob SDK
-        AdMobManager.initialize(this)
+        // Initialize Google AdMob SDK safely
+        try {
+            AdMobManager.initialize(this)
+        } catch (e: Throwable) {
+            e.printStackTrace()
+        }
 
         // Setup Local Room DB and Constructor Injection DI
         val database = Room.databaseBuilder(
@@ -176,12 +179,6 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                         }
-
-                        // App-wide Blocking Online Only Overlay
-                        OnlineOnlyOverlay(
-                            isOnline = isOnline,
-                            onRetry = { viewModel.retryConnection() }
-                        )
                     }
                 }
             }
