@@ -81,7 +81,8 @@ data class DbVerifiedNews(
     val factCheckVerdict: String = "", // e.g. "TRUE", "FALSE", "MISLEADING"
     val confidenceScore: Double = 1.0,
     val officialSources: List<String> = emptyList(),
-    val originalUrl: String = ""
+    val originalUrl: String = "",
+    val category: String = "National" // "National", "Local", "Policy", "Candidates"
 )
 
 @Entity(tableName = "bookmarks")

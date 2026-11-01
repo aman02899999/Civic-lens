@@ -560,5 +560,53 @@ class CivicLensViewModel(
         _claimVerificationResult.value = null
         _claimVerificationError.value = null
     }
+
+    // Active article being verified with Gemini AI on the Dashboard
+    private val _analyzingArticleId = MutableStateFlow<String?>(null)
+    val analyzingArticleId: StateFlow<String?> = _analyzingArticleId.asStateFlow()
+
+    private val _selectedArticleVeracityResult = MutableStateFlow<com.example.data.remote.ElectionClaimVerificationResult?>(null)
+    val selectedArticleVeracityResult: StateFlow<com.example.data.remote.ElectionClaimVerificationResult?> = _selectedArticleVeracityResult.asStateFlow()
+
+    fun analyzeArticleVeracity(article: DbVerifiedNews) {
+        _analyzingArticleId.value = article.id
+        _claimVerificationError.value = null
+        viewModelScope.launch {
+            try {
+                val category = if (article.isFactCheck) "Fact Check Claims" else "Election News & Policies"
+                val result = repository.verifyElectionClaimWithGoogleSearch(article.title, category)
+                _selectedArticleVeracityResult.value = result
+                _claimVerificationResult.value = result
+
+                val currentHistory = _claimVerificationHistory.value.toMutableList()
+                currentHistory.removeAll { it.claimText.equals(result.claimText, ignoreCase = true) }
+                currentHistory.add(0, result)
+                _claimVerificationHistory.value = currentHistory.take(15)
+
+                val updatedVerdict = when {
+                    result.verdict.contains("FALSE", ignoreCase = true) -> "FALSE"
+                    result.verdict.contains("MISLEADING", ignoreCase = true) -> "MISLEADING"
+                    result.verdict.contains("TRUE", ignoreCase = true) -> "TRUE"
+                    result.verdict.contains("PARTIAL", ignoreCase = true) -> "PARTIALLY_TRUE"
+                    else -> article.factCheckVerdict.ifEmpty { "VERIFIED" }
+                }
+                val updatedArticle = article.copy(
+                    factCheckVerdict = updatedVerdict,
+                    confidenceScore = result.confidenceScore,
+                    isFactCheck = true,
+                    officialSources = if (result.officialPortalsChecked.isNotEmpty()) result.officialPortalsChecked else article.officialSources
+                )
+                repository.insertNews(listOf(updatedArticle))
+            } catch (e: Exception) {
+                _claimVerificationError.value = "Analysis error: ${e.localizedMessage}"
+            } finally {
+                _analyzingArticleId.value = null
+            }
+        }
+    }
+
+    fun dismissArticleVeracityModal() {
+        _selectedArticleVeracityResult.value = null
+    }
 }
 

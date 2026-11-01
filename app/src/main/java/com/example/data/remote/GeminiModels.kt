@@ -146,7 +146,8 @@ data class LiveNewsArticle(
     val verdict: String,
     val confidenceScore: Double,
     val officialSources: List<String>,
-    val originalUrl: String
+    val originalUrl: String,
+    val category: String = "National"
 )
 
 @JsonClass(generateAdapter = true)

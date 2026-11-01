@@ -16,7 +16,7 @@ import androidx.room.TypeConverters
         DbChatMessage::class,
         DbGovtJob::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

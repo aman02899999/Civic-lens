@@ -59,6 +59,10 @@ class CivicLensRepository(private val dao: CivicLensDao) {
         }
     }
 
+    suspend fun insertNews(newsList: List<DbVerifiedNews>) {
+        dao.insertNews(newsList)
+    }
+
     suspend fun clearChatSession(sessionName: String) {
         dao.clearChatSession(sessionName)
     }
@@ -334,38 +338,146 @@ class CivicLensRepository(private val dao: CivicLensDao) {
         val news = listOf(
             DbVerifiedNews(
                 id = "news_1",
-                title = "Election Commission of India Upgrades eVigil Application for Real-time Complaints",
-                content = "The Election Commission of India (ECI) has announced a major tech overhaul of its eVigil mobile application. Users can now report MCC (Model Code of Conduct) violations within 100 seconds of recording evidence. Ground response squads are mandated to address reports within 100 minutes of receipt.",
-                date = "2026-07-10",
+                title = "Election Commission of India Upgrades cVIGIL App for Real-time MCC Violation Action",
+                content = "The Election Commission of India (ECI) has announced a major upgrade of its cVIGIL mobile application. Citizens can report Model Code of Conduct violations with geo-tagged photos and audio-visual proofs within 100 seconds. Flying Squads are mandated to verify and act on verified complaints within 100 minutes of submission.",
+                date = "2026-08-14",
                 source = "Election Commission of India (ECI)",
                 isFactCheck = false,
+                factCheckVerdict = "TRUE",
                 confidenceScore = 1.0,
                 officialSources = listOf("https://eci.gov.in", "https://pib.gov.in"),
-                originalUrl = "https://eci.gov.in"
+                originalUrl = "https://eci.gov.in",
+                category = "Policy"
             ),
             DbVerifiedNews(
                 id = "fact_1",
-                title = "PIB Fact Check: Claims of 'Electoral Free Gift Internet Recharge' are Completely Fake",
-                content = "A WhatsApp message circulating in multiple groups asserts that the Ministry of Electronics and Information Technology (MeitY) is providing a free 3-month internet recharge to celebrate upcoming assembly elections. The Press Information Bureau (PIB) Fact Check unit verified this claims and declared it false. No such scheme has been launched by the Government of India.",
-                date = "2026-07-08",
+                title = "PIB Fact Check: Claims That Voter ID Cards Without QR Code Are Invalid Is Completely Fake",
+                content = "Viral WhatsApp audio and social media messages falsely claim that the Election Commission will reject older Voter ID (EPIC) cards lacking digital QR codes. PIB Fact Check confirmed that all standard physical voter cards remain 100% valid. Additionally, citizens can use any of 12 approved government photo identity documents to vote.",
+                date = "2026-08-12",
                 source = "Press Information Bureau (PIB)",
                 isFactCheck = true,
                 factCheckVerdict = "FALSE",
                 confidenceScore = 0.99,
-                officialSources = listOf("https://factcheck.pib.gov.in", "https://meity.gov.in"),
-                originalUrl = "https://factcheck.pib.gov.in"
+                officialSources = listOf("https://factcheck.pib.gov.in", "https://eci.gov.in"),
+                originalUrl = "https://factcheck.pib.gov.in",
+                category = "National"
             ),
             DbVerifiedNews(
                 id = "fact_2",
-                title = "Fact Check: Ministry of Power Denies Charging Surcharges on Small Solar Roof Installs",
-                content = "A social media post on X falsely claims that the Ministry of Power has instituted an additional grid surcharge of 12% on households using PM Surya Ghar solar rooftop solutions under 2kW. The Ministry issued an official clarification reaffirming that grid connection is fully subsidized and exempt from additional charges up to 3kW.",
-                date = "2026-07-05",
-                source = "Ministry of Power / PIB",
+                title = "Supreme Court Judgment Confirms 5 EVMs Per Segment for VVPAT Paper Slip Audit",
+                content = "Claims circulating online suggest that the Supreme Court made 100% manual counting of all VVPAT paper slips mandatory across India. The Supreme Court judgment actually confirmed the protocol of random physical counting of 5 polling stations per assembly constituency, rejecting petitions for total physical tallying while strengthening post-poll memory verification.",
+                date = "2026-08-08",
+                source = "Supreme Court / ECI",
+                isFactCheck = true,
+                factCheckVerdict = "MISLEADING",
+                confidenceScore = 0.96,
+                officialSources = listOf("https://main.sci.gov.in", "https://eci.gov.in"),
+                originalUrl = "https://sci.gov.in",
+                category = "Policy"
+            ),
+            DbVerifiedNews(
+                id = "fact_3",
+                title = "Cybercrime Warning: Fraudulent Link Promising 'Free ₹5,000 Election Recharge' Is A Phishing Scam",
+                content = "A fraudulent website mimicking Ministry of Electronics & IT (MeitY) promises direct mobile recharge and cash bonuses celebrating general elections. The Press Information Bureau and National Cyber Crime Portal confirmed no such government welfare bonus exists, warning citizens against clicking malicious phishing links.",
+                date = "2026-08-05",
+                source = "PIB Fact Check & MeitY",
+                isFactCheck = true,
+                factCheckVerdict = "FALSE",
+                confidenceScore = 0.99,
+                officialSources = listOf("https://factcheck.pib.gov.in", "https://cybercrime.gov.in"),
+                originalUrl = "https://factcheck.pib.gov.in",
+                category = "National"
+            ),
+            DbVerifiedNews(
+                id = "news_2",
+                title = "ECI Expands Nationwide Home Voting Facility for Senior Citizens 85+ and PwD Voters",
+                content = "In a major accessibility milestone, the Election Commission has operationalized dedicated postal ballot home voting for octogenarians (aged 85 and above) and Persons with Disabilities (with 40% benchmark disability). Polling teams accompanied by videographers and party polling agents visit registered residences to preserve ballot secrecy.",
+                date = "2026-08-02",
+                source = "Election Commission of India (ECI)",
+                isFactCheck = false,
+                factCheckVerdict = "TRUE",
+                confidenceScore = 0.98,
+                officialSources = listOf("https://eci.gov.in", "https://pib.gov.in"),
+                originalUrl = "https://eci.gov.in",
+                category = "Policy"
+            ),
+            DbVerifiedNews(
+                id = "fact_4",
+                title = "Fact Check: Viral Video of EVM Tampering In Polling Station Traced to 2019 Mock Poll Demonstration",
+                content = "A viral video shared across social networks claimed to show electronic voting machines casting votes for a specific party during active polling. PIB Fact Check and district election authorities confirmed the clip is from a scheduled pre-poll commissioning mock drill where equal test votes are cast before political party representatives.",
+                date = "2026-07-28",
+                source = "PIB Fact Check Unit",
+                isFactCheck = true,
+                factCheckVerdict = "MISLEADING",
+                confidenceScore = 0.97,
+                officialSources = listOf("https://factcheck.pib.gov.in", "https://eci.gov.in"),
+                originalUrl = "https://factcheck.pib.gov.in",
+                category = "Local"
+            ),
+            DbVerifiedNews(
+                id = "fact_5",
+                title = "Fact Check: Rumors of Private App For Overseas Indian NRI Remote Voting Debunked",
+                content = "Online advertisements claimed that non-resident Indian (NRI) citizens residing abroad can cast votes through a third-party private mobile app. ECI issued a statutory clarification stating that under Section 20A of the Representation of the People Act, overseas voters must be physically present at their registered constituency polling booth with original passport.",
+                date = "2026-07-22",
+                source = "Election Commission of India (ECI)",
                 isFactCheck = true,
                 factCheckVerdict = "FALSE",
                 confidenceScore = 0.98,
-                officialSources = listOf("https://pmsuryaghar.gov.in", "https://powermin.gov.in"),
-                originalUrl = "https://pmsuryaghar.gov.in"
+                officialSources = listOf("https://eci.gov.in", "https://mea.gov.in"),
+                originalUrl = "https://eci.gov.in",
+                category = "National"
+            ),
+            DbVerifiedNews(
+                id = "news_3",
+                title = "Model Code of Conduct Enforced: Discretionary Financial Grants & Government Hoardings Barred",
+                content = "The Election Commission of India has directed state and central administrative bodies to remove all partisan advertisements, hoardings, and promotional public hoardings within 72 hours of election notification. New policy sanctions involving financial commitments without prior Election Commission approval remain strictly prohibited.",
+                date = "2026-07-18",
+                source = "ECI Compendium of Instructions",
+                isFactCheck = false,
+                factCheckVerdict = "TRUE",
+                confidenceScore = 0.99,
+                officialSources = listOf("https://eci.gov.in"),
+                originalUrl = "https://eci.gov.in",
+                category = "Policy"
+            ),
+            DbVerifiedNews(
+                id = "news_4",
+                title = "ECI Mandates 3-Time Criminal Background Disclosures for All Contesting Candidates",
+                content = "Under Supreme Court guidelines, all political parties and contesting candidates must publish declared criminal antecedents in local newspapers and state television at three separate campaign intervals before polling day. Non-compliance invites contempt notices.",
+                date = "2026-07-15",
+                source = "Election Commission of India (ECI)",
+                isFactCheck = false,
+                factCheckVerdict = "TRUE",
+                confidenceScore = 1.0,
+                officialSources = listOf("https://eci.gov.in", "https://affidavits.eci.gov.in"),
+                originalUrl = "https://eci.gov.in",
+                category = "Candidates"
+            ),
+            DbVerifiedNews(
+                id = "fact_6",
+                title = "Fact Check: Deepfake Audio Claiming Candidate Nomination Rejection Debunked by Returning Officer",
+                content = "A synthetic audio recording circulating on messaging groups falsely claimed that a prominent constituency candidate's nomination papers were rejected during scrutiny. District Returning Officer confirmed scrutiny passed unanimously with valid affidavits on the official portal.",
+                date = "2026-07-12",
+                source = "District Election Office & PIB",
+                isFactCheck = true,
+                factCheckVerdict = "FALSE",
+                confidenceScore = 0.99,
+                officialSources = listOf("https://factcheck.pib.gov.in", "https://eci.gov.in"),
+                originalUrl = "https://factcheck.pib.gov.in",
+                category = "Candidates"
+            ),
+            DbVerifiedNews(
+                id = "news_5",
+                title = "District Election Officers Establish All-Women Model 'Sakhi' Polling Stations in Urban Wards",
+                content = "Local district administrations have operationalized special Sakhi polling stations staffed entirely by women polling officials, security personnel, and videographers. Each booth is equipped with accessibility ramps, dedicated elder queues, and drinking water facilities.",
+                date = "2026-07-08",
+                source = "District Election Office (DEO)",
+                isFactCheck = false,
+                factCheckVerdict = "TRUE",
+                confidenceScore = 0.98,
+                officialSources = listOf("https://eci.gov.in"),
+                originalUrl = "https://eci.gov.in",
+                category = "Local"
             )
         )
         dao.insertNews(news)
@@ -558,7 +670,8 @@ class CivicLensRepository(private val dao: CivicLensDao) {
                   "verdict": "TRUE" or "FALSE" or "MISLEADING" or "PARTIALLY_TRUE" or "UNVERIFIED",
                   "confidenceScore": 0.0 to 1.0 based on verification and presence of official sources,
                   "officialSources": ["https://eci.gov.in/link-to-docs", "https://pib.gov.in/link-to-docs"],
-                  "originalUrl": "Primary link to original news page"
+                  "originalUrl": "Primary link to original news page",
+                  "category": "National" or "Local" or "Policy" or "Candidates"
                 }
               ]
             }
@@ -606,7 +719,8 @@ class CivicLensRepository(private val dao: CivicLensDao) {
                             factCheckVerdict = art.verdict,
                             confidenceScore = art.confidenceScore,
                             officialSources = art.officialSources,
-                            originalUrl = art.originalUrl
+                            originalUrl = art.originalUrl,
+                            category = art.category.ifBlank { "National" }
                         )
                     }
                     if (dbNewsList.isNotEmpty()) {
